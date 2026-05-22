@@ -1,6 +1,7 @@
 /* ═══════════════════════════════════════════════════════════════
-   Breaking Bad — Main Stylesheet
-   Structure: Reset → Variables → Base → Components → Sections → Animations → Utilities
+   Breaking Bad — Desert Industrial Stylesheet
+   Palette: dusty sand · hazard yellow · rust · charred black · bone
+   Mood: analog film · gritty realism · hazmat · New Mexico desert
 ═══════════════════════════════════════════════════════════════ */
 
 /* ── Reset ── */
@@ -12,55 +13,87 @@
 
 /* ── CSS Variables ── */
 :root {
-  --bb-black:   #050505;
-  --bb-dark:    #0a0a0a;
-  --bb-charcoal:#111111;
-  --bb-gray:    #1a1a1a;
-  --bb-green:   #39ff14;
-  --bb-cyan:    #00e5ff;
-  --bb-amber:   #ffb300;
-  --bb-yellow:  #d4a017;
-  --bb-red:     #c0392b;
-  --bb-muted:   #8a8a8a;
+  /* Backgrounds — charred, not pure black */
+  --bb-void:      #0d0b08;   /* deepest background */
+  --bb-black:     #111009;   /* main bg */
+  --bb-dark:      #1a1208;   /* section alt */
+  --bb-panel:     #1f1a0f;   /* card/panel bg */
+  --bb-border:    #2e2416;   /* default border */
+  --bb-border-hi: #4a3820;   /* highlighted border */
 
-  --shadow-neon-green: 0 0 20px rgba(57,255,20,0.4), 0 0 60px rgba(57,255,20,0.15);
-  --shadow-neon-cyan:  0 0 20px rgba(0,229,255,0.4), 0 0 60px rgba(0,229,255,0.15);
-  --shadow-neon-amber: 0 0 20px rgba(255,179,0,0.4), 0 0 60px rgba(255,179,0,0.15);
+  /* Desert palette */
+  --bb-sand:      #c8a96e;   /* warm sand */
+  --bb-bone:      #d4bc8a;   /* lighter sand/bone */
+  --bb-dust:      #8a7355;   /* muted dust */
+  --bb-rust:      #8b3a1a;   /* rust/burnt sienna */
+  --bb-rust-hi:   #b04a22;   /* brighter rust */
+  --bb-earth:     #5c3d1e;   /* dark earth */
 
+  /* Hazard accents */
+  --bb-hazard:    #e8c547;   /* hazmat suit yellow */
+  --bb-hazard-hi: #f5d060;   /* brighter hazard */
+  --bb-hazard-dk: #a88a2a;   /* dark hazard */
+  --bb-amber:     #c97d20;   /* warm amber */
+
+  /* Text */
+  --bb-text:      #d4bc8a;   /* primary text — warm bone */
+  --bb-text-dim:  #7a6545;   /* dimmed text */
+  --bb-text-faint:#4a3820;   /* very faint */
+
+  /* Fonts */
   --font-display: 'Bebas Neue', sans-serif;
   --font-body:    'Source Sans 3', sans-serif;
   --font-mono:    'Share Tech Mono', monospace;
 }
 
 /* ── Base ── */
-html {
-  scroll-behavior: smooth;
-}
+html { scroll-behavior: smooth; }
 
 body {
   background-color: var(--bb-black);
-  color: #f0f0f0;
+  color: var(--bb-text);
   font-family: var(--font-body);
   overflow-x: hidden;
 }
 
 /* ── Scrollbar ── */
-::-webkit-scrollbar { width: 6px; }
-::-webkit-scrollbar-track { background: var(--bb-dark); }
-::-webkit-scrollbar-thumb { background: var(--bb-green); border-radius: 3px; }
+::-webkit-scrollbar { width: 5px; }
+::-webkit-scrollbar-track { background: var(--bb-void); }
+::-webkit-scrollbar-thumb { background: var(--bb-hazard-dk); border-radius: 0; }
 
-/* ── Noise texture overlay ── */
-body::before {
-  content: '';
+/* ═══════════════════════════════════════════════════════════════
+   GRAIN & TEXTURE OVERLAYS
+   Heavy analog film grain — the defining visual layer
+═══════════════════════════════════════════════════════════════ */
+
+/* SVG grain filter — applied via .grain-layer */
+.grain-layer {
   position: fixed;
   inset: 0;
-  background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)' opacity='0.04'/%3E%3C/svg%3E");
   pointer-events: none;
-  z-index: 9999;
-  opacity: 0.35;
+  z-index: 9000;
+  opacity: 1;
+  /* High-frequency fractal noise for analog grain */
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='300' height='300'%3E%3Cfilter id='grain'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.75' numOctaves='4' stitchTiles='stitch'/%3E%3CfeColorMatrix type='saturate' values='0'/%3E%3CfeBlend in='SourceGraphic' mode='multiply'/%3E%3C/filter%3E%3Crect width='300' height='300' filter='url(%23grain)' opacity='0.18'/%3E%3C/svg%3E");
+  background-repeat: repeat;
+  background-size: 200px 200px;
+  mix-blend-mode: overlay;
 }
 
-/* ── Scanlines ── */
+/* Vignette — darkens edges like a film frame */
+.vignette-layer {
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
+  z-index: 8999;
+  background: radial-gradient(
+    ellipse 85% 80% at 50% 50%,
+    transparent 40%,
+    rgba(8, 6, 3, 0.55) 100%
+  );
+}
+
+/* Horizontal burn lines — subtle analog artifact */
 body::after {
   content: '';
   position: fixed;
@@ -68,45 +101,54 @@ body::after {
   background: repeating-linear-gradient(
     0deg,
     transparent,
-    transparent 2px,
-    rgba(0,0,0,0.08) 2px,
-    rgba(0,0,0,0.08) 4px
+    transparent 3px,
+    rgba(0, 0, 0, 0.06) 3px,
+    rgba(0, 0, 0, 0.06) 4px
   );
   pointer-events: none;
-  z-index: 9998;
+  z-index: 8998;
 }
 
 /* ═══════════════════════════════════════════════════════════════
    COMPONENTS
 ═══════════════════════════════════════════════════════════════ */
 
-/* ── Glass card ── */
-.glass {
-  background: rgba(255,255,255,0.04);
-  backdrop-filter: blur(12px);
-  -webkit-backdrop-filter: blur(12px);
-  border: 1px solid rgba(255,255,255,0.08);
+/* ── Panel (replaces glass — no blur, solid industrial) ── */
+.panel {
+  background: var(--bb-panel);
+  border: 1px solid var(--bb-border);
 }
 
-.glass-green {
-  background: rgba(57,255,20,0.05);
-  backdrop-filter: blur(12px);
-  -webkit-backdrop-filter: blur(12px);
-  border: 1px solid rgba(57,255,20,0.2);
+.panel-hazard {
+  background: var(--bb-panel);
+  border: 1px solid var(--bb-hazard-dk);
+  border-left: 3px solid var(--bb-hazard);
 }
 
-/* ── Neon text ── */
-.neon-green {
-  color: var(--bb-green);
-  text-shadow: 0 0 10px rgba(57,255,20,0.6), 0 0 30px rgba(57,255,20,0.3);
+.panel-rust {
+  background: var(--bb-panel);
+  border: 1px solid var(--bb-rust);
+  border-left: 3px solid var(--bb-rust-hi);
 }
-.neon-cyan {
-  color: var(--bb-cyan);
-  text-shadow: 0 0 10px rgba(0,229,255,0.6), 0 0 30px rgba(0,229,255,0.3);
+
+/* ── Hazard text — no neon glow, just raw color ── */
+.text-hazard {
+  color: var(--bb-hazard);
 }
-.neon-amber {
+.text-sand {
+  color: var(--bb-sand);
+}
+.text-rust {
+  color: var(--bb-rust-hi);
+}
+.text-bone {
+  color: var(--bb-bone);
+}
+.text-dust {
+  color: var(--bb-dust);
+}
+.text-amber {
   color: var(--bb-amber);
-  text-shadow: 0 0 10px rgba(255,179,0,0.6), 0 0 30px rgba(255,179,0,0.3);
 }
 
 /* ── Periodic element badge ── */
@@ -119,11 +161,12 @@ body::after {
   padding: 4px 10px;
   line-height: 1;
   position: relative;
+  /* Rough, no border-radius */
 }
 .periodic-badge .atomic-num {
   font-family: var(--font-mono);
   font-size: 0.6rem;
-  opacity: 0.7;
+  opacity: 0.6;
   align-self: flex-start;
 }
 .periodic-badge .symbol {
@@ -134,67 +177,74 @@ body::after {
 .periodic-badge .element-name {
   font-family: var(--font-mono);
   font-size: 0.5rem;
-  opacity: 0.7;
+  opacity: 0.6;
   letter-spacing: 0.05em;
 }
 
-/* ── CTA Buttons ── */
+/* ── CTA Buttons — industrial, no glow ── */
 .btn-primary {
   position: relative;
   overflow: hidden;
-  transition: all 0.3s ease;
+  transition: background 0.2s ease, color 0.2s ease, transform 0.2s ease;
   cursor: pointer;
+  background: var(--bb-hazard);
+  color: var(--bb-void);
+  border: 2px solid var(--bb-hazard);
+  font-family: var(--font-mono);
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
 }
-.btn-primary::before {
-  content: '';
-  position: absolute;
-  inset: 0;
-  background: linear-gradient(135deg, rgba(57,255,20,0.15), transparent);
-  opacity: 0;
-  transition: opacity 0.3s ease;
-}
-.btn-primary:hover::before { opacity: 1; }
 .btn-primary:hover {
-  box-shadow: 0 0 25px rgba(57,255,20,0.5), 0 0 60px rgba(57,255,20,0.2);
-  transform: translateY(-2px);
+  background: var(--bb-hazard-hi);
+  border-color: var(--bb-hazard-hi);
+  transform: translateY(-1px);
 }
+.btn-primary:active { transform: translateY(0); }
 
 .btn-secondary {
-  transition: all 0.3s ease;
+  transition: background 0.2s ease, border-color 0.2s ease, transform 0.2s ease;
   cursor: pointer;
+  background: transparent;
+  border: 1px solid var(--bb-border-hi);
+  color: var(--bb-dust);
+  font-family: var(--font-mono);
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
 }
 .btn-secondary:hover {
-  background: rgba(255,255,255,0.08);
-  border-color: rgba(255,255,255,0.3);
-  transform: translateY(-2px);
+  background: var(--bb-panel);
+  border-color: var(--bb-sand);
+  color: var(--bb-sand);
+  transform: translateY(-1px);
 }
 
-/* ── Section divider ── */
+/* ── Section divider — hazard stripe ── */
 .chem-divider {
-  height: 1px;
-  background: linear-gradient(
+  height: 2px;
+  background: repeating-linear-gradient(
     90deg,
-    transparent,
-    rgba(57,255,20,0.4) 30%,
-    rgba(0,229,255,0.4) 70%,
-    transparent
+    var(--bb-hazard)    0px,
+    var(--bb-hazard)    18px,
+    var(--bb-void)      18px,
+    var(--bb-void)      24px
   );
+  opacity: 0.35;
 }
 
 /* ── Stat box ── */
 .stat-box {
-  border-left: 2px solid var(--bb-green);
-  transition: border-color 0.3s ease;
+  border-left: 3px solid var(--bb-hazard);
+  transition: border-color 0.25s ease;
 }
-.stat-box:hover { border-color: var(--bb-cyan); }
+.stat-box:hover { border-color: var(--bb-sand); }
 
 /* ── Progress bar ── */
 .progress-bar {
-  height: 2px;
-  background: linear-gradient(90deg, var(--bb-green), var(--bb-cyan));
+  height: 3px;
+  background: var(--bb-hazard);
   transform-origin: left;
   transform: scaleX(0);
-  transition: transform 1.2s ease;
+  transition: transform 1.4s cubic-bezier(0.25, 0.46, 0.45, 0.94);
 }
 .progress-bar.active { transform: scaleX(1); }
 
@@ -202,16 +252,25 @@ body::after {
 .formula-bg {
   position: absolute;
   font-family: var(--font-mono);
-  font-size: 0.75rem;
-  color: rgba(57,255,20,0.08);
+  font-size: 0.7rem;
+  color: rgba(200, 169, 110, 0.07);
   pointer-events: none;
   user-select: none;
   white-space: nowrap;
 }
 
+/* ── Image treatment — desaturated, warm-tinted ── */
+.img-cinematic {
+  filter: saturate(0.45) contrast(1.15) sepia(0.25) brightness(0.85);
+  transition: filter 0.4s ease;
+}
+.img-cinematic:hover {
+  filter: saturate(0.6) contrast(1.1) sepia(0.15) brightness(0.9);
+}
+
 /* ── Image placeholder ── */
 .img-placeholder {
-  background: linear-gradient(135deg, #111 0%, #1a1a1a 50%, #0d0d0d 100%);
+  background: linear-gradient(160deg, #1a1208 0%, #2c1f0e 50%, #111009 100%);
   display: flex;
   align-items: center;
   justify-content: center;
@@ -221,9 +280,9 @@ body::after {
 .img-placeholder::after {
   content: attr(data-label);
   font-family: var(--font-mono);
-  font-size: 0.65rem;
-  color: rgba(57,255,20,0.3);
-  letter-spacing: 0.1em;
+  font-size: 0.6rem;
+  color: rgba(200, 169, 110, 0.25);
+  letter-spacing: 0.12em;
   text-transform: uppercase;
   position: absolute;
   bottom: 8px;
@@ -232,17 +291,47 @@ body::after {
   white-space: nowrap;
 }
 
+/* ── Hazard stripe decoration ── */
+.hazard-stripe {
+  background: repeating-linear-gradient(
+    -45deg,
+    var(--bb-hazard)    0px,
+    var(--bb-hazard)    8px,
+    var(--bb-void)      8px,
+    var(--bb-void)      16px
+  );
+  opacity: 0.7;
+}
+
+/* ── Section label ── */
+.section-label {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  font-family: var(--font-mono);
+  font-size: 0.65rem;
+  letter-spacing: 0.3em;
+  text-transform: uppercase;
+  color: var(--bb-dust);
+}
+.section-label::before,
+.section-label::after {
+  content: '';
+  display: block;
+  width: 40px;
+  height: 1px;
+  background: var(--bb-border-hi);
+}
+
 /* ═══════════════════════════════════════════════════════════════
    NAVBAR
 ═══════════════════════════════════════════════════════════════ */
 #navbar {
-  transition: background 0.4s ease, backdrop-filter 0.4s ease;
+  transition: background 0.35s ease, border-color 0.35s ease;
 }
 #navbar.scrolled {
-  background: rgba(5,5,5,0.92);
-  backdrop-filter: blur(20px);
-  -webkit-backdrop-filter: blur(20px);
-  border-bottom: 1px solid rgba(57,255,20,0.15);
+  background: rgba(13, 11, 8, 0.96);
+  border-bottom: 1px solid var(--bb-border-hi);
 }
 
 /* ═══════════════════════════════════════════════════════════════
@@ -250,17 +339,31 @@ body::after {
 ═══════════════════════════════════════════════════════════════ */
 .hero-bg {
   background:
-    radial-gradient(ellipse 80% 60% at 50% 0%, rgba(57,255,20,0.07) 0%, transparent 60%),
-    radial-gradient(ellipse 60% 40% at 80% 80%, rgba(0,229,255,0.05) 0%, transparent 50%),
-    radial-gradient(ellipse 50% 50% at 20% 60%, rgba(255,179,0,0.04) 0%, transparent 50%),
-    linear-gradient(180deg, #050505 0%, #0a0a0a 50%, #050505 100%);
+    /* Warm desert horizon glow */
+    radial-gradient(ellipse 100% 50% at 50% 100%, rgba(200, 120, 30, 0.12) 0%, transparent 60%),
+    /* Faint hazard yellow top */
+    radial-gradient(ellipse 60% 30% at 50% 0%, rgba(232, 197, 71, 0.06) 0%, transparent 50%),
+    /* Base — charred earth */
+    linear-gradient(180deg, #0d0b08 0%, #1a1208 40%, #111009 100%);
 }
 
 #smoke-canvas {
   position: absolute;
   inset: 0;
   pointer-events: none;
-  opacity: 0.35;
+  opacity: 0.5;
+}
+
+/* ── Hero image frame — rough industrial ── */
+.hero-frame {
+  position: relative;
+}
+.hero-frame::before {
+  content: '';
+  position: absolute;
+  inset: -2px;
+  background: linear-gradient(135deg, var(--bb-hazard-dk), var(--bb-rust), var(--bb-earth));
+  z-index: -1;
 }
 
 /* ═══════════════════════════════════════════════════════════════
@@ -270,37 +373,55 @@ body::after {
   position: relative;
   overflow: hidden;
   cursor: pointer;
-  transition: transform 0.35s cubic-bezier(0.25,0.46,0.45,0.94);
+  transition: transform 0.3s ease;
 }
 .char-card:hover {
-  transform: translateY(-8px) scale(1.02);
+  transform: translateY(-6px);
 }
 .char-card .char-overlay {
   position: absolute;
   inset: 0;
-  background: linear-gradient(0deg, rgba(5,5,5,0.95) 0%, rgba(5,5,5,0.4) 50%, transparent 100%);
+  background: linear-gradient(
+    0deg,
+    rgba(13, 11, 8, 0.97) 0%,
+    rgba(13, 11, 8, 0.5)  45%,
+    transparent 100%
+  );
   transition: opacity 0.3s ease;
 }
-.char-card:hover .char-overlay { opacity: 0.7; }
+.char-card:hover .char-overlay { opacity: 0.8; }
 
-.char-card .char-glow {
+.char-card .char-accent {
   position: absolute;
   inset: 0;
   opacity: 0;
-  transition: opacity 0.35s ease;
+  transition: opacity 0.3s ease;
 }
-.char-card:hover .char-glow { opacity: 1; }
+.char-card:hover .char-accent { opacity: 1; }
 
 .char-card .char-info {
   position: absolute;
   bottom: 0;
   left: 0;
   right: 0;
-  padding: 1.5rem;
-  transform: translateY(4px);
+  padding: 1.25rem;
+  transform: translateY(3px);
   transition: transform 0.3s ease;
 }
 .char-card:hover .char-info { transform: translateY(0); }
+
+/* ── Character card border on hover ── */
+.char-card::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  border: 1px solid transparent;
+  transition: border-color 0.3s ease;
+  pointer-events: none;
+}
+.char-card:hover::after {
+  border-color: var(--bb-hazard-dk);
+}
 
 /* ═══════════════════════════════════════════════════════════════
    TIMELINE
@@ -311,7 +432,14 @@ body::after {
   top: 0;
   bottom: 0;
   width: 1px;
-  background: linear-gradient(180deg, transparent, var(--bb-green) 20%, var(--bb-green) 80%, transparent);
+  background: linear-gradient(
+    180deg,
+    transparent,
+    var(--bb-border-hi) 15%,
+    var(--bb-hazard-dk) 50%,
+    var(--bb-border-hi) 85%,
+    transparent
+  );
   transform: translateX(-50%);
 }
 
@@ -324,31 +452,54 @@ body::after {
   cursor: pointer;
 }
 .scene-card img {
-  transition: transform 0.5s cubic-bezier(0.25,0.46,0.45,0.94);
+  transition: transform 0.5s ease, filter 0.4s ease;
   width: 100%;
   height: 100%;
   object-fit: cover;
+  filter: saturate(0.4) contrast(1.2) sepia(0.3) brightness(0.8);
 }
-.scene-card:hover img { transform: scale(1.08); }
+.scene-card:hover img {
+  transform: scale(1.06);
+  filter: saturate(0.55) contrast(1.15) sepia(0.2) brightness(0.85);
+}
 
 .scene-card .scene-overlay {
   position: absolute;
   inset: 0;
-  background: linear-gradient(0deg, rgba(5,5,5,0.9) 0%, transparent 60%);
+  background: linear-gradient(
+    0deg,
+    rgba(13, 11, 8, 0.92) 0%,
+    rgba(13, 11, 8, 0.3)  50%,
+    transparent 100%
+  );
   opacity: 0;
   transition: opacity 0.3s ease;
 }
 .scene-card:hover .scene-overlay { opacity: 1; }
 
+/* ── Scene card border accent ── */
+.scene-card::after {
+  content: '';
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  height: 2px;
+  background: var(--bb-hazard);
+  transform: scaleX(0);
+  transform-origin: left;
+  transition: transform 0.35s ease;
+}
+.scene-card:hover::after { transform: scaleX(1); }
+
 /* ═══════════════════════════════════════════════════════════════
-   FACT / DATA CARDS
+   DATA / FACT CARDS
 ═══════════════════════════════════════════════════════════════ */
 .fact-card {
-  transition: border-color 0.3s ease, box-shadow 0.3s ease;
+  transition: border-color 0.25s ease;
 }
 .fact-card:hover {
-  border-color: rgba(57,255,20,0.4);
-  box-shadow: 0 0 30px rgba(57,255,20,0.1);
+  border-color: var(--bb-hazard-dk);
 }
 
 /* ═══════════════════════════════════════════════════════════════
@@ -363,7 +514,7 @@ body::after {
   width: 100%;
   height: 100%;
   transform-style: preserve-3d;
-  transition: transform 0.6s cubic-bezier(0.25,0.46,0.45,0.94);
+  transition: transform 0.55s cubic-bezier(0.25, 0.46, 0.45, 0.94);
 }
 .trivia-card.flipped .trivia-inner {
   transform: rotateY(180deg);
@@ -374,7 +525,7 @@ body::after {
   inset: 0;
   backface-visibility: hidden;
   -webkit-backface-visibility: hidden;
-  border-radius: 0.75rem;
+  border-radius: 0;
   padding: 1.5rem;
   display: flex;
   flex-direction: column;
@@ -389,47 +540,57 @@ body::after {
 /* ═══════════════════════════════════════════════════════════════
    ANIMATIONS
 ═══════════════════════════════════════════════════════════════ */
-@keyframes glow-pulse {
-  0%, 100% { opacity: 0.6; }
-  50%       { opacity: 1; }
-}
-.glow-pulse { animation: glow-pulse 3s ease-in-out infinite; }
 
+/* Slow pulse — no neon, just opacity */
+@keyframes slow-pulse {
+  0%, 100% { opacity: 0.5; }
+  50%       { opacity: 0.9; }
+}
+.slow-pulse { animation: slow-pulse 4s ease-in-out infinite; }
+
+/* Flicker — analog light instability */
 @keyframes flicker {
-  0%, 95%, 100% { opacity: 1; }
-  96%  { opacity: 0.4; }
+  0%, 92%, 100% { opacity: 1; }
+  93%  { opacity: 0.6; }
+  94%  { opacity: 1; }
+  96%  { opacity: 0.3; }
   97%  { opacity: 1; }
-  98%  { opacity: 0.2; }
-  99%  { opacity: 1; }
 }
-.flicker { animation: flicker 8s infinite; }
+.flicker { animation: flicker 10s infinite; }
 
+/* Entrance animations */
 @keyframes slide-in-left {
-  from { opacity: 0; transform: translateX(-40px); }
+  from { opacity: 0; transform: translateX(-30px); }
   to   { opacity: 1; transform: translateX(0); }
 }
 @keyframes slide-in-right {
-  from { opacity: 0; transform: translateX(40px); }
+  from { opacity: 0; transform: translateX(30px); }
   to   { opacity: 1; transform: translateX(0); }
 }
 @keyframes fade-up {
-  from { opacity: 0; transform: translateY(30px); }
+  from { opacity: 0; transform: translateY(20px); }
   to   { opacity: 1; transform: translateY(0); }
 }
 
-.animate-slide-left  { animation: slide-in-left  0.8s ease forwards; }
-.animate-slide-right { animation: slide-in-right 0.8s ease forwards; }
-.animate-fade-up     { animation: fade-up        0.8s ease forwards; }
+.animate-slide-left  { animation: slide-in-left  0.7s ease forwards; }
+.animate-slide-right { animation: slide-in-right 0.7s ease forwards; }
+.animate-fade-up     { animation: fade-up        0.7s ease forwards; }
 
-/* ── Scroll reveal ── */
+/* Scroll reveal */
 .reveal {
   opacity: 0;
-  transform: translateY(30px);
-  transition: opacity 0.7s ease, transform 0.7s ease;
+  transform: translateY(24px);
+  transition: opacity 0.65s ease, transform 0.65s ease;
 }
 .reveal.visible {
   opacity: 1;
   transform: translateY(0);
+}
+
+/* Hazard stripe animation for loading bars */
+@keyframes stripe-march {
+  from { background-position: 0 0; }
+  to   { background-position: 32px 0; }
 }
 
 /* ── Reduced motion ── */
@@ -438,4 +599,105 @@ body::after {
     animation-duration: 0.01ms !important;
     transition-duration: 0.01ms !important;
   }
+}
+
+/* ── Trailer video player ── */
+#trailer-video {
+  width: 100%;
+  display: block;
+  background: #0d0b08;
+  /* Custom controls tint via accent-color */
+  accent-color: #e8c547;
+}
+
+/* Style native controls in supported browsers */
+#trailer-video::-webkit-media-controls-panel {
+  background: linear-gradient(0deg, rgba(13,11,8,0.95) 0%, rgba(26,18,8,0.8) 100%);
+}
+#trailer-video::-webkit-media-controls-play-button,
+#trailer-video::-webkit-media-controls-timeline,
+#trailer-video::-webkit-media-controls-volume-slider {
+  filter: sepia(1) saturate(3) hue-rotate(5deg) brightness(1.2);
+}
+
+/* Hover glow on the video wrapper */
+#trailer-video:hover {
+  box-shadow: 0 0 40px rgba(232, 197, 71, 0.06);
+}
+
+/* Focus ring for keyboard nav */
+#trailer-video:focus-visible {
+  outline: 2px solid #a88a2a;
+  outline-offset: 2px;
+}
+
+/* ── Custom Audio Player ── */
+#bb-player {
+  user-select: none;
+}
+
+/* Progress bar hover — увеличить высоту */
+#bb-progress-wrap:hover {
+  height: 6px;
+  margin-top: -1px;
+}
+#bb-progress-wrap:hover #bb-thumb {
+  width: 14px;
+  height: 14px;
+}
+
+/* Volume bar hover */
+#bb-vol-wrap:hover {
+  height: 5px;
+}
+
+/* Play button focus ring */
+#bb-play-btn:focus-visible {
+  outline: 2px solid #a88a2a;
+  outline-offset: 2px;
+}
+
+/* Smooth transitions */
+#bb-progress-wrap,
+#bb-vol-wrap {
+  transition: height 0.15s ease;
+}
+#bb-thumb {
+  transition: left 0.1s linear, width 0.15s ease, height 0.15s ease;
+}
+
+/* ── Scroll-to-top button ── */
+#scroll-top-btn {
+  transition: opacity 0.3s ease, transform 0.3s ease, background 0.2s, border-color 0.2s;
+}
+#scroll-top-btn:focus-visible {
+  outline: 2px solid #a88a2a;
+  outline-offset: 2px;
+}
+
+/* ── Lightbox ── */
+#lightbox {
+  transition: opacity 0.2s ease;
+}
+#lightbox img {
+  transition: opacity 0.2s ease;
+}
+#lb-prev:focus-visible,
+#lb-next:focus-visible {
+  outline: 2px solid #a88a2a;
+  outline-offset: 2px;
+}
+
+/* Scene cards — show pointer and subtle zoom hint */
+[data-lb-src] {
+  cursor: zoom-in;
+}
+[data-lb-src]:focus-visible {
+  outline: 2px solid #a88a2a;
+  outline-offset: 2px;
+}
+
+/* Quote blockquote transition for random quote */
+#quote-banner blockquote {
+  transition: opacity 0.25s ease;
 }

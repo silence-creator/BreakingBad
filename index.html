@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+﻿<!DOCTYPE html>
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
@@ -24,21 +24,20 @@
             mono:    ['Share Tech Mono', 'monospace'],
           },
           colors: {
-            'bb-black':    '#050505',
-            'bb-dark':     '#0a0a0a',
-            'bb-charcoal': '#111111',
-            'bb-gray':     '#1a1a1a',
-            'bb-green':    '#39ff14',
-            'bb-cyan':     '#00e5ff',
-            'bb-amber':    '#ffb300',
-            'bb-yellow':   '#d4a017',
-            'bb-red':      '#c0392b',
-            'bb-muted':    '#8a8a8a',
-          },
-          boxShadow: {
-            'neon-green': '0 0 20px rgba(57,255,20,0.4), 0 0 60px rgba(57,255,20,0.15)',
-            'neon-cyan':  '0 0 20px rgba(0,229,255,0.4), 0 0 60px rgba(0,229,255,0.15)',
-            'neon-amber': '0 0 20px rgba(255,179,0,0.4),  0 0 60px rgba(255,179,0,0.15)',
+            'bb-void':    '#0d0b08',
+            'bb-black':   '#111009',
+            'bb-dark':    '#1a1208',
+            'bb-panel':   '#1f1a0f',
+            'bb-border':  '#2e2416',
+            'bb-sand':    '#c8a96e',
+            'bb-bone':    '#d4bc8a',
+            'bb-dust':    '#8a7355',
+            'bb-rust':    '#8b3a1a',
+            'bb-hazard':  '#e8c547',
+            'bb-amber':   '#c97d20',
+            'bb-gray':    '#2e2416',
+            'bb-muted':   '#7a6545',
+            'bb-red':     '#8b2a1a',
           },
         }
       }
@@ -47,8 +46,141 @@
 
   <!-- External stylesheet -->
   <link rel="stylesheet" href="css/style.css" />
+  <style>
+    /* ── Language switcher ── */
+    .lang-btn {
+      font-family: var(--font-mono, 'Share Tech Mono', monospace);
+      font-size: 0.65rem;
+      letter-spacing: 0.15em;
+      padding: 3px 8px;
+      border: 1px solid #2e2416;
+      background: transparent;
+      color: #7a6545;
+      cursor: pointer;
+      transition: color 0.2s, border-color 0.2s, background 0.2s;
+      text-transform: uppercase;
+    }
+    .lang-btn.active {
+      color: #e8c547;
+      border-color: #a88a2a;
+      background: rgba(232,197,71,0.08);
+    }
+    .lang-btn:not(.active):hover {
+      color: #c8a96e;
+      border-color: #5c3d1e;
+    }
+    /* Hide/show translated elements */
+    [data-lang] { display: none; }
+    .lang-en [data-lang="en"],
+    .lang-ru [data-lang="ru"] { display: revert; }
+    /* Inline spans need inline display */
+    span[data-lang] { display: none; }
+    .lang-en span[data-lang="en"],
+    .lang-ru span[data-lang="ru"] { display: inline; }
+    /* ── Smoke overlay — 3 independent layers ── */
+    #smoke-overlay {
+      position: absolute;
+      inset: 0;
+      pointer-events: none;
+      z-index: 2;
+      overflow: hidden;
+    }
+
+    /* Shared layer base */
+    #smoke-overlay::before,
+    #smoke-overlay::after,
+    #smoke-overlay .smoke-mid {
+      content: '';
+      position: absolute;
+      inset: -30%;          /* oversized so drift doesn't show edges */
+      background-image: url('static/images/green_smoke_overlay.avif');
+      background-size: 140% 140%;
+      mix-blend-mode: screen;
+      will-change: transform, opacity;
+    }
+
+    /* Layer 1 — slow drift right + up, gentle pulse */
+    #smoke-overlay::before {
+      background-position: 20% 60%;
+      opacity: 0.11;
+      animation:
+        smoke-drift-a 28s ease-in-out infinite alternate,
+        smoke-pulse-a 14s ease-in-out infinite;
+    }
+
+    /* Layer 2 — medium drift left + down, offset phase */
+    #smoke-overlay::after {
+      background-position: 70% 30%;
+      opacity: 0.08;
+      animation:
+        smoke-drift-b 22s ease-in-out infinite alternate,
+        smoke-pulse-b 18s ease-in-out infinite;
+      animation-delay: -7s, -4s;
+    }
+
+    /* Layer 3 — fast subtle swirl, different scale */
+    #smoke-overlay .smoke-mid {
+      background-size: 180% 180%;
+      background-position: 50% 50%;
+      opacity: 0.06;
+      animation:
+        smoke-drift-c 16s ease-in-out infinite alternate,
+        smoke-pulse-c 10s ease-in-out infinite;
+      animation-delay: -3s, -8s;
+    }
+
+    /* Drift keyframes — translate + slight scale for depth */
+    @keyframes smoke-drift-a {
+      0%   { transform: translate(0%,    0%)    scale(1);    }
+      33%  { transform: translate(3%,   -2%)    scale(1.04); }
+      66%  { transform: translate(-2%,   3%)    scale(0.97); }
+      100% { transform: translate(4%,   -4%)    scale(1.06); }
+    }
+    @keyframes smoke-drift-b {
+      0%   { transform: translate(0%,    0%)    scale(1.05); }
+      40%  { transform: translate(-4%,   2%)    scale(0.98); }
+      70%  { transform: translate(2%,    4%)    scale(1.03); }
+      100% { transform: translate(-3%,  -3%)    scale(1);    }
+    }
+    @keyframes smoke-drift-c {
+      0%   { transform: translate(0%,    0%)    scale(1)    rotate(0deg);   }
+      50%  { transform: translate(-2%,  -3%)    scale(1.08) rotate(1.5deg); }
+      100% { transform: translate(3%,    2%)    scale(0.95) rotate(-1deg);  }
+    }
+
+    /* Opacity pulse — breathe in/out independently */
+    @keyframes smoke-pulse-a {
+      0%, 100% { opacity: 0.07; }
+      40%      { opacity: 0.15; }
+      70%      { opacity: 0.09; }
+    }
+    @keyframes smoke-pulse-b {
+      0%, 100% { opacity: 0.05; }
+      30%      { opacity: 0.12; }
+      65%      { opacity: 0.06; }
+    }
+    @keyframes smoke-pulse-c {
+      0%, 100% { opacity: 0.04; }
+      50%      { opacity: 0.10; }
+    }
+
+    /* Respect reduced motion */
+    @media (prefers-reduced-motion: reduce) {
+      #smoke-overlay::before,
+      #smoke-overlay::after,
+      #smoke-overlay .smoke-mid {
+        animation: none;
+        opacity: 0.08;
+      }
+    }
+  </style>
 </head>
-<body class="bg-bb-black text-white font-body">
+<body class="font-body lang-en" style="background-color:#111009;color:#d4bc8a;">
+
+<!-- Grain overlay -->
+<div aria-hidden="true" style="position:fixed;inset:0;pointer-events:none;z-index:9000;background-image:url('data:image/svg+xml,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 width=%22300%22 height=%22300%22%3E%3Cfilter id=%22g%22%3E%3CfeTurbulence type=%22fractalNoise%22 baseFrequency=%220.75%22 numOctaves=%224%22 stitchTiles=%22stitch%22/%3E%3CfeColorMatrix type=%22saturate%22 values=%220%22/%3E%3C/filter%3E%3Crect width=%22300%22 height=%22300%22 filter=%22url(%23g)%22 opacity=%220.16%22/%3E%3C/svg%3E');background-size:200px 200px;mix-blend-mode:overlay;opacity:0.9;"></div>
+<!-- Vignette -->
+<div aria-hidden="true" style="position:fixed;inset:0;pointer-events:none;z-index:8999;background:radial-gradient(ellipse 85% 80% at 50% 50%,transparent 40%,rgba(8,6,3,0.6) 100%);"></div>
 
 <!-- ═══════════════════════════════════════════════════════════════
      NAVBAR
@@ -58,38 +190,58 @@
 
     <!-- Logo -->
     <div class="flex items-center gap-3">
-      <div class="periodic-badge neon-green text-bb-green border-bb-green">
+      <div class="periodic-badge" style="color:#e8c547;border-color:#a88a2a;">
         <span class="atomic-num">35</span>
         <span class="symbol">Br</span>
         <span class="element-name">Bromine</span>
       </div>
-      <div class="periodic-badge neon-amber text-bb-amber border-bb-amber">
+      <div class="periodic-badge" style="color:#c8a96e;border-color:#8a7355;">
         <span class="atomic-num">56</span>
         <span class="symbol">Ba</span>
         <span class="element-name">Barium</span>
       </div>
-      <span class="font-display text-xl tracking-widest text-white ml-1 hidden sm:block">BREAKING BAD</span>
+      <span class="font-display text-xl tracking-widest ml-1 hidden sm:block flicker" style="color:#d4bc8a;">BREAKING BAD</span>
     </div>
 
     <!-- Nav links -->
     <div class="hidden md:flex items-center gap-8">
-      <a href="#characters" class="font-mono text-xs tracking-widest text-bb-muted hover:text-bb-green transition-colors duration-200 uppercase cursor-pointer">Characters</a>
-      <a href="#seasons"    class="font-mono text-xs tracking-widest text-bb-muted hover:text-bb-green transition-colors duration-200 uppercase cursor-pointer">Seasons</a>
-      <a href="#gallery"    class="font-mono text-xs tracking-widest text-bb-muted hover:text-bb-green transition-colors duration-200 uppercase cursor-pointer">Gallery</a>
-      <a href="#trivia"     class="font-mono text-xs tracking-widest text-bb-muted hover:text-bb-green transition-colors duration-200 uppercase cursor-pointer">Trivia</a>
+      <a href="#characters" class="font-mono text-xs tracking-widest uppercase cursor-pointer transition-colors duration-200" style="color:#7a6545;" onmouseover="this.style.color='#c8a96e'" onmouseout="this.style.color='#7a6545'">
+        <span data-lang="en">Characters</span><span data-lang="ru">Персонажи</span>
+      </a>
+      <a href="#seasons" class="font-mono text-xs tracking-widest uppercase cursor-pointer transition-colors duration-200" style="color:#7a6545;" onmouseover="this.style.color='#c8a96e'" onmouseout="this.style.color='#7a6545'">
+        <span data-lang="en">Seasons</span><span data-lang="ru">Сезоны</span>
+      </a>
+      <a href="#gallery" class="font-mono text-xs tracking-widest uppercase cursor-pointer transition-colors duration-200" style="color:#7a6545;" onmouseover="this.style.color='#c8a96e'" onmouseout="this.style.color='#7a6545'">
+        <span data-lang="en">Gallery</span><span data-lang="ru">Галерея</span>
+      </a>
+      <a href="#trailer" class="font-mono text-xs tracking-widest uppercase cursor-pointer transition-colors duration-200" style="color:#7a6545;" onmouseover="this.style.color='#c8a96e'" onmouseout="this.style.color='#7a6545'">
+        <span data-lang="en">Trailer</span><span data-lang="ru">Трейлер</span>
+      </a>
+      <a href="#trivia" class="font-mono text-xs tracking-widest uppercase cursor-pointer transition-colors duration-200" style="color:#7a6545;" onmouseover="this.style.color='#c8a96e'" onmouseout="this.style.color='#7a6545'">
+        <span data-lang="en">Trivia</span><span data-lang="ru">Факты</span>
+      </a>
     </div>
 
-    <!-- CTA -->
-    <a href="#hero" class="btn-primary glass-green px-5 py-2 font-mono text-xs tracking-widest text-bb-green uppercase cursor-pointer">
-      Watch Now
-    </a>
+    <!-- Right side: lang switcher + CTA -->
+    <div class="flex items-center gap-3">
+      <!-- Language switcher -->
+      <div class="flex items-center" style="border:1px solid #2e2416;">
+        <button class="lang-btn active" id="btn-en" onclick="setLang('en')" aria-label="Switch to English">EN</button>
+        <div style="width:1px;height:16px;background:#2e2416;"></div>
+        <button class="lang-btn" id="btn-ru" onclick="setLang('ru')" aria-label="Переключить на русский">RU</button>
+      </div>
+      <a href="https://kinogo.biz/38335--vo-vse-tyazhkie-serial.html#38335" target="_blank" class="btn-primary px-5 py-2 font-mono text-xs tracking-widest uppercase cursor-pointer">
+        <span data-lang="en">Watch Now</span>
+        <span data-lang="ru">Смотреть</span>
+      </a>
+    </div>
   </div>
 </nav>
 
 <!-- ═══════════════════════════════════════════════════════════════
      HERO SECTION
 ═══════════════════════════════════════════════════════════════ -->
-<section id="hero" class="relative min-h-screen hero-bg flex items-center overflow-hidden">
+<section id="hero" class="relative min-h-screen flex items-center overflow-hidden" style="background:radial-gradient(ellipse 100% 50% at 50% 100%,rgba(180,90,20,0.1) 0%,transparent 60%),radial-gradient(ellipse 60% 30% at 50% 0%,rgba(232,197,71,0.05) 0%,transparent 50%),linear-gradient(180deg,#0d0b08 0%,#1a1208 40%,#111009 100%);">
 
   <!-- Floating chemical formulas -->
   <span class="formula-bg" style="top:8%;left:3%;transform:rotate(-15deg)">C₁₀H₁₅N · HCl</span>
@@ -101,11 +253,14 @@
   <!-- Smoke canvas -->
   <canvas id="smoke-canvas"></canvas>
 
-  <!-- Radial glow orbs -->
-  <div class="absolute top-1/4 left-1/2 -translate-x-1/2 w-[600px] h-[600px] rounded-full pointer-events-none"
-       style="background:radial-gradient(circle,rgba(57,255,20,0.06) 0%,transparent 70%);"></div>
-  <div class="absolute bottom-0 right-0 w-[400px] h-[400px] rounded-full pointer-events-none"
-       style="background:radial-gradient(circle,rgba(0,229,255,0.05) 0%,transparent 70%);"></div>
+  <!-- Green smoke overlay — 3-layer animated -->
+  <div id="smoke-overlay" aria-hidden="true">
+    <div class="smoke-mid"></div>
+  </div>
+
+  <!-- Desert horizon warm glow -->
+  <div class="absolute bottom-0 left-0 right-0 h-64 pointer-events-none"
+       style="background:linear-gradient(0deg,rgba(160,80,15,0.07) 0%,transparent 100%);"></div>
 
   <!-- Hero content -->
   <div class="relative z-10 max-w-7xl mx-auto px-4 md:px-8 pt-28 pb-20 grid lg:grid-cols-2 gap-12 items-center">
@@ -113,54 +268,54 @@
     <!-- Left: Text -->
     <div class="animate-slide-left">
       <div class="flex items-center gap-2 mb-6">
-        <div class="periodic-badge text-bb-green border-bb-green" style="padding:6px 14px;">
+        <div class="periodic-badge" style="color:#e8c547;border-color:#a88a2a;padding:6px 14px;">
           <span class="atomic-num">35</span>
           <span class="symbol" style="font-size:3rem;">Br</span>
           <span class="element-name">Bromine</span>
         </div>
-        <div class="h-px flex-1 bg-gradient-to-r from-bb-green to-transparent opacity-40"></div>
-        <div class="periodic-badge text-bb-amber border-bb-amber" style="padding:6px 14px;">
+        <div style="flex:1;height:1px;background:linear-gradient(90deg,#a88a2a,transparent);opacity:0.5;"></div>
+        <div class="periodic-badge" style="color:#c8a96e;border-color:#8a7355;padding:6px 14px;">
           <span class="atomic-num">56</span>
           <span class="symbol" style="font-size:3rem;">Ba</span>
           <span class="element-name">Barium</span>
         </div>
       </div>
 
-      <h1 class="font-display text-7xl md:text-9xl leading-none tracking-wider mb-2 flicker">BREAKING</h1>
-      <h1 class="font-display text-7xl md:text-9xl leading-none tracking-wider neon-green mb-6">BAD</h1>
+      <h1 class="font-display leading-none tracking-wider mb-1 flicker" style="font-size:clamp(5rem,12vw,9rem);color:#d4bc8a;">BREAKING</h1>
+      <h1 class="font-display leading-none tracking-wider mb-6" style="font-size:clamp(5rem,12vw,9rem);color:#e8c547;">BAD</h1>
 
-      <p class="font-mono text-xs tracking-[0.3em] text-bb-muted uppercase mb-4">
-        2008 — 2013 &nbsp;·&nbsp; AMC &nbsp;·&nbsp; 5 Seasons &nbsp;·&nbsp; 62 Episodes
+      <p class="font-mono text-xs uppercase mb-4" style="color:#7a6545;letter-spacing:0.3em;">
+        <span data-lang="en">2008 — 2013 &nbsp;·&nbsp; AMC &nbsp;·&nbsp; 5 Seasons &nbsp;·&nbsp; 62 Episodes</span><span data-lang="ru">2008 — 2013 &nbsp;·&nbsp; AMC &nbsp;·&nbsp; 5 Сезонов &nbsp;·&nbsp; 62 Эпизода</span>
       </p>
-      <p class="text-lg leading-relaxed max-w-lg mb-10" style="color:#9a9a9a;">
-        A high school chemistry teacher diagnosed with inoperable lung cancer turns to manufacturing and selling methamphetamine with a former student to secure his family's future — and transforms into something far more dangerous.
+      <p class="text-lg leading-relaxed max-w-lg mb-10" style="color:#7a6545;">
+        <span data-lang="en">A high school chemistry teacher diagnosed with inoperable lung cancer turns to manufacturing and selling methamphetamine with a former student — and transforms into something far more dangerous.</span><span data-lang="ru">Учитель химии в старшей школе, которому поставили неоперабельный рак лёгких, начинает производить и продавать метамфетамин вместе с бывшим учеником — и превращается в нечто куда более опасное.</span>
       </p>
 
       <!-- Stats -->
       <div class="flex gap-8 mb-10">
         <div class="stat-box pl-4">
-          <div class="font-display text-3xl neon-green">9.5</div>
-          <div class="font-mono text-xs text-bb-muted tracking-widest">IMDb Rating</div>
+          <div class="font-display text-3xl" style="color:#e8c547;">9.5</div>
+          <div class="font-mono text-xs tracking-widest" style="color:#7a6545;"><span data-lang="en">IMDb Rating</span><span data-lang="ru">Рейтинг IMDb</span></div>
         </div>
         <div class="stat-box pl-4">
-          <div class="font-display text-3xl neon-amber">96%</div>
-          <div class="font-mono text-xs text-bb-muted tracking-widest">Rotten Tomatoes</div>
+          <div class="font-display text-3xl" style="color:#c8a96e;">96%</div>
+          <div class="font-mono text-xs tracking-widest" style="color:#7a6545;"><span data-lang="en">Rotten Tomatoes</span><span data-lang="ru">Rotten Tomatoes</span></div>
         </div>
         <div class="stat-box pl-4">
-          <div class="font-display text-3xl neon-cyan">62</div>
-          <div class="font-mono text-xs text-bb-muted tracking-widest">Episodes</div>
+          <div class="font-display text-3xl" style="color:#d4bc8a;">62</div>
+          <div class="font-mono text-xs tracking-widest" style="color:#7a6545;"><span data-lang="en">Episodes</span><span data-lang="ru">Эпизодов</span></div>
         </div>
       </div>
 
       <!-- CTA buttons -->
       <div class="flex flex-wrap gap-4">
-        <button class="btn-primary glass-green px-8 py-4 font-mono text-sm tracking-widest text-bb-green uppercase border border-bb-green/40 rounded-sm">
+        <button class="btn-primary px-8 py-4 font-mono text-sm tracking-widest uppercase" onclick="location.href='https://kinogo.biz/38335--vo-vse-tyazhkie-serial.html#38335'">
           <span class="flex items-center gap-3">
             <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 24 24" aria-hidden="true"><path d="M8 5v14l11-7z"/></svg>
             Start Watching
           </span>
         </button>
-        <button class="btn-secondary glass px-8 py-4 font-mono text-sm tracking-widest text-white uppercase border border-white/15 rounded-sm">
+        <button class="btn-secondary px-8 py-4 font-mono text-sm tracking-widest uppercase" onclick="location.href='https://ru.wikipedia.org/wiki/Breaking_Bad'">
           <span class="flex items-center gap-3">
             <svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24" aria-hidden="true">
               <circle cx="12" cy="12" r="10"/><path d="M12 8v4m0 4h.01"/>
@@ -174,45 +329,50 @@
     <!-- Right: Visual panel -->
     <div class="animate-slide-right relative hidden lg:block">
       <div class="relative">
-        <div class="absolute -inset-1 rounded-sm opacity-60 glow-pulse"
-             style="background:linear-gradient(135deg,rgba(57,255,20,0.3),rgba(0,229,255,0.2),rgba(255,179,0,0.2));filter:blur(8px);"></div>
-        <div class="relative glass rounded-sm overflow-hidden" style="aspect-ratio:4/5;">
-          <img src="https://images.unsplash.com/photo-1532187863486-abf9dbad1b69?w=800&q=80"
-               alt="Chemistry laboratory with blue crystals and chemical equipment"
-               class="w-full h-full object-cover opacity-70"
-               style="filter:saturate(0.6) contrast(1.2);" />
+        <!-- Hazard frame border -->
+        <div class="absolute -inset-px slow-pulse" style="background:linear-gradient(135deg,#a88a2a,#5c3d1e,#8b3a1a);z-index:-1;"></div>
+        <!-- Hazard stripe top -->
+        <div style="height:6px;background:repeating-linear-gradient(-45deg,#e8c547 0px,#e8c547 8px,#0d0b08 8px,#0d0b08 16px);opacity:0.7;"></div>
+        <div class="overflow-hidden" style="aspect-ratio:4/5;background:#0d0b08;">
+          <img src="static/images/promo_image.webp"
+               alt="Chemistry laboratory with glassware and chemical equipment"
+               class="w-full h-full object-cover"
+               style="filter:saturate(0.35) contrast(1.2) sepia(0.3) brightness(0.8);" />
           <div class="absolute inset-0"
-               style="background:linear-gradient(180deg,rgba(5,5,5,0.3) 0%,transparent 30%,transparent 60%,rgba(5,5,5,0.8) 100%),linear-gradient(135deg,rgba(57,255,20,0.08),rgba(0,229,255,0.05));"></div>
-          <div class="absolute top-4 right-4 periodic-badge text-bb-cyan border-bb-cyan opacity-80" style="padding:4px 10px;">
+               style="background:linear-gradient(180deg,rgba(13,11,8,0.4) 0%,transparent 25%,transparent 55%,rgba(13,11,8,0.92) 100%);"></div>
+          <div class="absolute top-4 right-4 periodic-badge" style="color:#8a7355;border-color:#2e2416;padding:4px 10px;background:rgba(13,11,8,0.8);">
             <span class="atomic-num">2</span>
             <span class="symbol" style="font-size:1.6rem;">He</span>
             <span class="element-name">Helium</span>
           </div>
           <div class="absolute bottom-0 left-0 right-0 p-6">
-            <div class="font-mono text-xs tracking-[0.2em] text-bb-green uppercase mb-1 opacity-70">Albuquerque, New Mexico</div>
-            <div class="font-display text-2xl tracking-wider">The Blue Sky</div>
-            <div class="font-mono text-xs text-bb-muted mt-1">99.1% Pure · Heisenberg Formula</div>
+            <div class="font-mono text-xs uppercase mb-1" style="color:#e8c547;opacity:0.8;letter-spacing:0.2em;"><span data-lang="en">Albuquerque, New Mexico</span><span data-lang="ru">Альбукерке, Нью-Мексико</span></div>
+            <div class="font-display text-2xl tracking-wider" style="color:#d4bc8a;"><span data-lang="en">The Blue Sky</span><span data-lang="ru">Голубое небо</span></div>
+            <div class="font-mono text-xs mt-1" style="color:#7a6545;"><span data-lang="en">99.1% Pure · Heisenberg Formula</span><span data-lang="ru">99.1% Чистота · Формула Хайзенберга</span></div>
           </div>
         </div>
+        <!-- Hazard stripe bottom -->
+        <div style="height:6px;background:repeating-linear-gradient(-45deg,#e8c547 0px,#e8c547 8px,#0d0b08 8px,#0d0b08 16px);opacity:0.7;"></div>
+
         <!-- Floating mini cards -->
-        <div class="absolute -left-16 top-1/4 glass rounded-sm p-3 w-32 animate-fade-up" style="animation-delay:0.5s;">
-          <div class="font-mono text-xs text-bb-green mb-1">PURITY</div>
-          <div class="font-display text-2xl neon-green">99.1%</div>
+        <div class="absolute -left-16 top-1/4 animate-fade-up" style="animation-delay:0.5s;background:#1f1a0f;border:1px solid #2e2416;border-left:3px solid #e8c547;padding:12px 14px;width:130px;">
+          <div class="font-mono text-xs mb-1" style="color:#e8c547;"><span data-lang="en">PURITY</span><span data-lang="ru">ЧИСТОТА</span></div>
+          <div class="font-display text-2xl" style="color:#e8c547;">99.1%</div>
           <div class="progress-bar active mt-2" style="width:99.1%;"></div>
         </div>
-        <div class="absolute -right-12 bottom-1/3 glass rounded-sm p-3 w-36 animate-fade-up" style="animation-delay:0.8s;">
-          <div class="font-mono text-xs text-bb-amber mb-1">STREET VALUE</div>
-          <div class="font-display text-xl neon-amber">$80M+</div>
-          <div class="font-mono text-xs text-bb-muted mt-1">Estimated total</div>
+        <div class="absolute -right-12 bottom-1/3 animate-fade-up" style="animation-delay:0.8s;background:#1f1a0f;border:1px solid #2e2416;border-left:3px solid #c8a96e;padding:12px 14px;width:140px;">
+          <div class="font-mono text-xs mb-1" style="color:#c8a96e;"><span data-lang="en">STREET VALUE</span><span data-lang="ru">УЛИЧНАЯ ЦЕНА</span></div>
+          <div class="font-display text-xl" style="color:#c8a96e;">$80M+</div>
+          <div class="font-mono text-xs mt-1" style="color:#7a6545;"><span data-lang="en">Estimated total</span><span data-lang="ru">Оценочная сумма</span></div>
         </div>
       </div>
     </div>
   </div>
 
   <!-- Scroll indicator -->
-  <div class="absolute bottom-8 left-1/2 -translate-x-1/2 flex flex-col items-center gap-2 opacity-50">
-    <span class="font-mono text-xs tracking-widest text-bb-muted uppercase">Scroll</span>
-    <div class="w-px h-12 bg-gradient-to-b from-bb-green to-transparent"></div>
+  <div class="absolute bottom-8 left-1/2 -translate-x-1/2 flex flex-col items-center gap-2" style="opacity:0.4;">
+    <span class="font-mono text-xs tracking-widest uppercase" style="color:#7a6545;"><span data-lang="en">Scroll</span><span data-lang="ru">Листать</span></span>
+    <div style="width:1px;height:48px;background:linear-gradient(180deg,#a88a2a,transparent);"></div>
   </div>
 </section>
 
@@ -221,136 +381,130 @@
 <!-- ═══════════════════════════════════════════════════════════════
      CHARACTER SHOWCASE
 ═══════════════════════════════════════════════════════════════ -->
-<section id="characters" class="relative py-24 bg-bb-dark overflow-hidden">
+<section id="characters" class="relative py-24 overflow-hidden" style="background:#1a1208;">
   <div class="absolute inset-0 pointer-events-none">
     <div class="absolute top-0 left-1/4 w-96 h-96 rounded-full opacity-5"
-         style="background:radial-gradient(circle,#39ff14,transparent);filter:blur(60px);"></div>
-    <div class="absolute bottom-0 right-1/4 w-96 h-96 rounded-full opacity-5"
-         style="background:radial-gradient(circle,#00e5ff,transparent);filter:blur(60px);"></div>
+         style="background:radial-gradient(circle,#c8a96e,transparent);filter:blur(80px);"></div>
+    <div class="absolute bottom-0 right-1/4 w-96 h-96 rounded-full opacity-4"
+         style="background:radial-gradient(circle,#8b3a1a,transparent);filter:blur(80px);"></div>
   </div>
 
   <div class="max-w-7xl mx-auto px-4 md:px-8 relative z-10">
     <div class="text-center mb-16 reveal">
       <div class="flex items-center justify-center gap-4 mb-4">
-        <div class="h-px w-16 bg-gradient-to-r from-transparent to-bb-green opacity-60"></div>
-        <span class="font-mono text-xs tracking-[0.3em] text-bb-green uppercase">The Players</span>
-        <div class="h-px w-16 bg-gradient-to-l from-transparent to-bb-green opacity-60"></div>
+        <div style="height:1px;width:64px;background:linear-gradient(90deg,transparent,#a88a2a);opacity:0.7;"></div>
+        <span class="font-mono text-xs uppercase" style="color:#8a7355;letter-spacing:0.3em;"><span data-lang="en">The Players</span><span data-lang="ru">Участники</span></span>
+        <div style="height:1px;width:64px;background:linear-gradient(270deg,transparent,#a88a2a);opacity:0.7;"></div>
       </div>
-      <h2 class="font-display text-6xl md:text-7xl tracking-wider mb-4">CHARACTER DOSSIER</h2>
-      <p class="text-bb-muted font-mono text-sm tracking-wider max-w-xl mx-auto">Every empire needs its architects. Every story needs its monsters.</p>
+      <h2 class="font-display text-6xl md:text-7xl tracking-wider mb-4" style="color:#d4bc8a;"><span data-lang="en">CHARACTER DOSSIER</span><span data-lang="ru">ДОСЬЕ ПЕРСОНАЖЕЙ</span></h2>
+      <p class="font-mono text-sm tracking-wider max-w-xl mx-auto" style="color:#7a6545;"><span data-lang="en">Every empire needs its architects. Every story needs its monsters.</span><span data-lang="ru">Каждой империи нужны архитекторы. Каждой истории нужны монстры.</span></p>
     </div>
 
     <div class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-4 reveal">
 
       <!-- Walter White -->
-      <div class="char-card glass rounded-sm lg:col-span-2 lg:row-span-2" style="min-height:380px;">
+      <div class="char-card lg:col-span-2 lg:row-span-2" style="min-height:380px;background:#1f1a0f;border:1px solid #2e2416;">
         <div class="img-placeholder w-full h-full absolute inset-0" data-label="Walter White · Heisenberg"
-             style="background:linear-gradient(160deg,#0d1a0d 0%,#1a2e1a 40%,#0a0a0a 100%);">
-          <img src="https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=600&q=80"
+             style="background:linear-gradient(160deg,#1a1208 0%,#2c1f0e 40%,#0d0b08 100%);">
+          <img src="static/images/walter_white.webp"
                alt="Portrait of a middle-aged man with intense gaze — Walter White"
-               class="w-full h-full object-cover object-top opacity-60"
-               style="filter:grayscale(30%) contrast(1.15) saturate(0.7);" />
+               class="w-full h-full object-cover object-top"
+               style="filter:saturate(0.3) contrast(1.2) sepia(0.4) brightness(0.75);" />
         </div>
         <div class="char-overlay"></div>
-        <div class="char-glow" style="background:linear-gradient(135deg,rgba(57,255,20,0.12),transparent);"></div>
         <div class="char-info">
-          <div class="periodic-badge text-bb-green border-bb-green inline-flex mb-2" style="padding:2px 8px;">
+          <div class="periodic-badge inline-flex mb-2" style="color:#e8c547;border-color:#a88a2a;padding:2px 8px;">
             <span class="atomic-num">1</span>
             <span class="symbol" style="font-size:1.2rem;">W</span>
             <span class="element-name">Walter</span>
           </div>
-          <h3 class="font-display text-2xl tracking-wider neon-green">WALTER WHITE</h3>
-          <p class="font-mono text-xs text-bb-muted tracking-wider mt-1">A.K.A. HEISENBERG</p>
-          <p class="text-sm text-gray-400 mt-2 leading-relaxed">Chemistry teacher. Cancer patient. Drug lord. The transformation of a desperate man into a legend.</p>
+          <h3 class="font-display text-2xl tracking-wider" style="color:#e8c547;">WALTER WHITE</h3>
+          <p class="font-mono text-xs tracking-wider mt-1" style="color:#7a6545;"><span data-lang="en">A.K.A. HEISENBERG</span><span data-lang="ru">ОН ЖЕ ХАЙЗЕНБЕРГ</span></p>
+          <p class="text-sm mt-2 leading-relaxed" style="color:#8a7355;"><span data-lang="en">Chemistry teacher. Cancer patient. Drug lord. The transformation of a desperate man into a legend.</span><span data-lang="ru">Учитель химии. Онкобольной. Наркобарон. Превращение отчаявшегося человека в легенду.</span></p>
           <div class="flex gap-2 mt-3">
-            <span class="glass px-2 py-1 font-mono text-xs text-bb-green border border-bb-green/20">Protagonist</span>
-            <span class="glass px-2 py-1 font-mono text-xs text-bb-amber border border-bb-amber/20">Antagonist</span>
+            <span class="font-mono text-xs px-2 py-1" style="color:#e8c547;border:1px solid #a88a2a;background:#1f1a0f;"><span data-lang="en">Protagonist</span><span data-lang="ru">Протагонист</span></span>
+            <span class="font-mono text-xs px-2 py-1" style="color:#c8a96e;border:1px solid #5c3d1e;background:#1f1a0f;"><span data-lang="en">Antagonist</span><span data-lang="ru">Антагонист</span></span>
           </div>
         </div>
       </div>
 
       <!-- Jesse Pinkman -->
-      <div class="char-card glass rounded-sm" style="min-height:180px;">
+      <div class="char-card" style="min-height:180px;background:#1f1a0f;border:1px solid #2e2416;">
         <div class="img-placeholder w-full h-full absolute inset-0" data-label="Jesse Pinkman"
-             style="background:linear-gradient(160deg,#1a1000 0%,#2e2000 40%,#0a0a0a 100%);">
-          <img src="https://images.unsplash.com/photo-1500648767791-00dcc994a43e?w=400&q=80"
+             style="background:linear-gradient(160deg,#1a1208 0%,#2c1f0e 40%,#0d0b08 100%);">
+          <img src="static/images/Jesse_Pinkman.jpg"
                alt="Young man with troubled expression — Jesse Pinkman"
-               class="w-full h-full object-cover object-top opacity-55"
-               style="filter:grayscale(20%) contrast(1.1) saturate(0.8);" />
+               class="w-full h-full object-cover object-top"
+               style="filter:saturate(0.3) contrast(1.15) sepia(0.35) brightness(0.75);" />
         </div>
         <div class="char-overlay"></div>
-        <div class="char-glow" style="background:linear-gradient(135deg,rgba(255,179,0,0.1),transparent);"></div>
         <div class="char-info">
-          <h3 class="font-display text-lg tracking-wider neon-amber">JESSE PINKMAN</h3>
-          <p class="font-mono text-xs text-bb-muted">Former Student · Cook</p>
+          <h3 class="font-display text-lg tracking-wider" style="color:#c8a96e;">JESSE PINKMAN</h3>
+          <p class="font-mono text-xs" style="color:#7a6545;"><span data-lang="en">Former Student · Cook</span><span data-lang="ru">Бывший ученик · Повар</span></p>
         </div>
       </div>
 
       <!-- Saul Goodman -->
-      <div class="char-card glass rounded-sm" style="min-height:180px;">
+      <div class="char-card" style="min-height:180px;background:#1f1a0f;border:1px solid #2e2416;">
         <div class="img-placeholder w-full h-full absolute inset-0" data-label="Saul Goodman"
-             style="background:linear-gradient(160deg,#0d0d1a 0%,#1a1a2e 40%,#0a0a0a 100%);">
-          <img src="https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?w=400&q=80"
+             style="background:linear-gradient(160deg,#1a1208 0%,#2c1f0e 40%,#0d0b08 100%);">
+          <img src="static/images/saul_goodman.jpg"
                alt="Man in a suit with a confident smirk — Saul Goodman"
-               class="w-full h-full object-cover object-top opacity-55"
-               style="filter:grayscale(25%) contrast(1.1) saturate(0.75);" />
+               class="w-full h-full object-cover object-top"
+               style="filter:saturate(0.3) contrast(1.15) sepia(0.35) brightness(0.75);" />
         </div>
         <div class="char-overlay"></div>
-        <div class="char-glow" style="background:linear-gradient(135deg,rgba(0,229,255,0.1),transparent);"></div>
         <div class="char-info">
-          <h3 class="font-display text-lg tracking-wider neon-cyan">SAUL GOODMAN</h3>
-          <p class="font-mono text-xs text-bb-muted">Criminal Lawyer · Fixer</p>
+          <h3 class="font-display text-lg tracking-wider" style="color:#d4bc8a;">SAUL GOODMAN</h3>
+          <p class="font-mono text-xs" style="color:#7a6545;"><span data-lang="en">Criminal Lawyer · Fixer</span><span data-lang="ru">Адвокат · Решала</span></p>
         </div>
       </div>
 
       <!-- Gus Fring -->
-      <div class="char-card glass rounded-sm" style="min-height:180px;">
+      <div class="char-card" style="min-height:180px;background:#1f1a0f;border:1px solid #2e2416;">
         <div class="img-placeholder w-full h-full absolute inset-0" data-label="Gus Fring"
-             style="background:linear-gradient(160deg,#1a0d00 0%,#2e1a00 40%,#0a0a0a 100%);">
-          <img src="https://images.unsplash.com/photo-1519085360753-af0119f7cbe7?w=400&q=80"
+             style="background:linear-gradient(160deg,#1a1208 0%,#2c1f0e 40%,#0d0b08 100%);">
+          <img src="static/images/gus_fring.jpg"
                alt="Composed man in business attire — Gus Fring"
-               class="w-full h-full object-cover object-top opacity-55"
-               style="filter:grayscale(30%) contrast(1.15) saturate(0.65);" />
+               class="w-full h-full object-cover object-top"
+               style="filter:saturate(0.25) contrast(1.2) sepia(0.4) brightness(0.7);" />
         </div>
         <div class="char-overlay"></div>
-        <div class="char-glow" style="background:linear-gradient(135deg,rgba(255,100,0,0.1),transparent);"></div>
         <div class="char-info">
-          <h3 class="font-display text-lg tracking-wider" style="color:#ff6400;text-shadow:0 0 10px rgba(255,100,0,0.5);">GUS FRING</h3>
-          <p class="font-mono text-xs text-bb-muted">Distributor · Nemesis</p>
+          <h3 class="font-display text-lg tracking-wider" style="color:#c97d20;">GUS FRING</h3>
+          <p class="font-mono text-xs" style="color:#7a6545;"><span data-lang="en">Distributor · Nemesis</span><span data-lang="ru">Дистрибьютор · Враг</span></p>
         </div>
       </div>
 
       <!-- Mike Ehrmantraut -->
-      <div class="char-card glass rounded-sm" style="min-height:180px;">
+      <div class="char-card" style="min-height:180px;background:#1f1a0f;border:1px solid #2e2416;">
         <div class="img-placeholder w-full h-full absolute inset-0" data-label="Mike Ehrmantraut"
-             style="background:linear-gradient(160deg,#0d0d0d 0%,#1a1a1a 40%,#050505 100%);">
-          <img src="https://images.unsplash.com/photo-1566492031773-4f4e44671857?w=400&q=80"
+             style="background:linear-gradient(160deg,#111009 0%,#1a1208 40%,#0d0b08 100%);">
+          <img src="static/images/mike_ehrmantraut.webp"
                alt="Older man with a weathered, stoic face — Mike Ehrmantraut"
-               class="w-full h-full object-cover object-top opacity-55"
-               style="filter:grayscale(40%) contrast(1.2) saturate(0.5);" />
+               class="w-full h-full object-cover object-top"
+               style="filter:saturate(0.2) contrast(1.25) sepia(0.3) brightness(0.7);" />
         </div>
         <div class="char-overlay"></div>
-        <div class="char-glow" style="background:linear-gradient(135deg,rgba(150,150,150,0.1),transparent);"></div>
         <div class="char-info">
-          <h3 class="font-display text-lg tracking-wider text-gray-300">MIKE EHRMANTRAUT</h3>
-          <p class="font-mono text-xs text-bb-muted">Cleaner · Enforcer</p>
+          <h3 class="font-display text-lg tracking-wider" style="color:#8a7355;">MIKE EHRMANTRAUT</h3>
+          <p class="font-mono text-xs" style="color:#7a6545;"><span data-lang="en">Cleaner · Enforcer</span><span data-lang="ru">Чистильщик · Исполнитель</span></p>
         </div>
       </div>
 
       <!-- Hank Schrader -->
-      <div class="char-card glass rounded-sm" style="min-height:180px;">
+      <div class="char-card" style="min-height:180px;background:#1f1a0f;border:1px solid #2e2416;">
         <div class="img-placeholder w-full h-full absolute inset-0" data-label="Hank Schrader"
-             style="background:linear-gradient(160deg,#0d0a00 0%,#1a1500 40%,#0a0a0a 100%);">
-          <img src="https://images.unsplash.com/photo-1560250097-0b93528c311a?w=400&q=80"
+             style="background:linear-gradient(160deg,#1a1208 0%,#2c1f0e 40%,#0d0b08 100%);">
+          <img src="static/images/hank_schrader.webp"
                alt="Broad-shouldered man with a determined look — Hank Schrader"
-               class="w-full h-full object-cover object-top opacity-55"
-               style="filter:grayscale(20%) contrast(1.1) saturate(0.7);" />
+               class="w-full h-full object-cover object-top"
+               style="filter:saturate(0.3) contrast(1.15) sepia(0.35) brightness(0.75);" />
         </div>
         <div class="char-overlay"></div>
-        <div class="char-glow" style="background:linear-gradient(135deg,rgba(212,160,23,0.1),transparent);"></div>
         <div class="char-info">
-          <h3 class="font-display text-lg tracking-wider neon-amber">HANK SCHRADER</h3>
-          <p class="font-mono text-xs text-bb-muted">DEA Agent · Brother-in-law</p>
+          <h3 class="font-display text-lg tracking-wider" style="color:#c8a96e;">HANK SCHRADER</h3>
+          <p class="font-mono text-xs" style="color:#7a6545;"><span data-lang="en">DEA Agent · Brother-in-law</span><span data-lang="ru">Агент DEA · Шурин</span></p>
         </div>
       </div>
 
@@ -363,58 +517,58 @@
 <!-- ═══════════════════════════════════════════════════════════════
      SEASONS TIMELINE
 ═══════════════════════════════════════════════════════════════ -->
-<section id="seasons" class="relative py-24 bg-bb-black overflow-hidden">
+<section id="seasons" class="relative py-24 overflow-hidden" style="background:#111009;">
   <div class="absolute inset-0 pointer-events-none">
-    <span class="formula-bg" style="top:10%;right:5%;font-size:1rem;opacity:0.05;">C₁₀H₁₅N</span>
-    <span class="formula-bg" style="bottom:15%;left:3%;font-size:0.9rem;opacity:0.05;">CH₃NH₂</span>
+    <span class="formula-bg" style="top:10%;right:5%;font-size:1rem;opacity:0.06;">C₁₀H₁₅N</span>
+    <span class="formula-bg" style="bottom:15%;left:3%;font-size:0.9rem;opacity:0.06;">CH₃NH₂</span>
   </div>
 
   <div class="max-w-7xl mx-auto px-4 md:px-8 relative z-10">
     <div class="text-center mb-20 reveal">
       <div class="flex items-center justify-center gap-4 mb-4">
-        <div class="h-px w-16 bg-gradient-to-r from-transparent to-bb-cyan opacity-60"></div>
-        <span class="font-mono text-xs tracking-[0.3em] text-bb-cyan uppercase">Story Arc</span>
-        <div class="h-px w-16 bg-gradient-to-l from-transparent to-bb-cyan opacity-60"></div>
+        <div style="height:1px;width:64px;background:linear-gradient(90deg,transparent,#a88a2a);opacity:0.7;"></div>
+        <span class="font-mono text-xs uppercase" style="color:#8a7355;letter-spacing:0.3em;"><span data-lang="en">Story Arc</span><span data-lang="ru">Сюжет</span></span>
+        <div style="height:1px;width:64px;background:linear-gradient(270deg,transparent,#a88a2a);opacity:0.7;"></div>
       </div>
-      <h2 class="font-display text-6xl md:text-7xl tracking-wider mb-4">SEASONS &amp; STORY</h2>
-      <p class="text-bb-muted font-mono text-sm tracking-wider max-w-xl mx-auto">Five seasons. One transformation. The complete descent.</p>
+      <h2 class="font-display text-6xl md:text-7xl tracking-wider mb-4" style="color:#d4bc8a;"><span data-lang="en">SEASONS &amp; STORY</span><span data-lang="ru">СЕЗОНЫ И ИСТОРИЯ</span></h2>
+      <p class="font-mono text-sm tracking-wider max-w-xl mx-auto" style="color:#7a6545;"><span data-lang="en">Five seasons. One transformation. The complete descent.</span><span data-lang="ru">Пять сезонов. Одно превращение. Полное падение.</span></p>
     </div>
 
     <div class="relative">
-      <div class="hidden lg:block timeline-line"></div>
+      <div class="hidden lg:block timeline-line" style="background:linear-gradient(180deg,transparent,#a88a2a 20%,#a88a2a 80%,transparent);"></div>
       <div class="space-y-12 lg:space-y-0">
 
         <!-- Season 1 -->
         <div class="lg:grid lg:grid-cols-2 lg:gap-16 lg:mb-16 reveal">
           <div class="lg:text-right lg:pr-16 pb-8 lg:pb-0">
-            <div class="glass rounded-sm p-6 inline-block w-full">
+            <div style="background:#1f1a0f;border:1px solid #2e2416;border-left:3px solid #a88a2a;padding:1.5rem;display:inline-block;width:100%;">
               <div class="flex items-center gap-3 lg:justify-end mb-3">
-                <div class="periodic-badge text-bb-green border-bb-green" style="padding:3px 8px;">
+                <div class="periodic-badge" style="color:#e8c547;border-color:#a88a2a;padding:3px 8px;">
                   <span class="atomic-num">01</span><span class="symbol" style="font-size:1.4rem;">S1</span><span class="element-name">Season</span>
                 </div>
                 <div>
-                  <div class="font-display text-2xl tracking-wider neon-green">SEASON ONE</div>
-                  <div class="font-mono text-xs text-bb-muted">2008 · 7 Episodes</div>
+                  <div class="font-display text-2xl tracking-wider" style="color:#e8c547;"><span data-lang="en">SEASON ONE</span><span data-lang="ru">СЕЗОН ПЕРВЫЙ</span></div>
+                  <div class="font-mono text-xs" style="color:#7a6545;"><span data-lang="en">2008 · 7 Episodes</span><span data-lang="ru">2008 · 7 Эпизодов</span></div>
                 </div>
               </div>
-              <p class="text-gray-400 text-sm leading-relaxed">Walter White receives a terminal cancer diagnosis and makes a fateful decision — cook methamphetamine with former student Jesse Pinkman. The RV lab. The first cook. The first kill. A man begins to break.</p>
+              <p class="text-sm leading-relaxed" style="color:#7a6545;"><span data-lang="en">Walter White receives a terminal cancer diagnosis and makes a fateful decision — cook methamphetamine with former student Jesse Pinkman. The RV lab. The first cook. The first kill. A man begins to break.</span><span data-lang="ru">Уолтер Уайт получает смертельный диагноз и принимает роковое решение — варить метамфетамин вместе с бывшим учеником Джесси Пинкманом. Лаборатория в фургоне. Первая варка. Первое убийство. Человек начинает ломаться.</span></p>
               <div class="flex flex-wrap gap-2 mt-4 lg:justify-end">
-                <span class="glass px-2 py-1 font-mono text-xs text-bb-green border border-bb-green/20">Pilot</span>
-                <span class="glass px-2 py-1 font-mono text-xs text-bb-muted border border-white/10">The RV Cook</span>
-                <span class="glass px-2 py-1 font-mono text-xs text-bb-muted border border-white/10">First Blood</span>
+                <span class="font-mono text-xs px-2 py-1" style="color:#e8c547;border:1px solid #a88a2a;background:#1f1a0f;">Pilot</span>
+                <span class="font-mono text-xs px-2 py-1" style="color:#7a6545;border:1px solid #2e2416;background:#1f1a0f;">The RV Cook</span>
+                <span class="font-mono text-xs px-2 py-1" style="color:#7a6545;border:1px solid #2e2416;background:#1f1a0f;">First Blood</span>
               </div>
             </div>
           </div>
           <div class="hidden lg:flex items-start justify-start pl-0 relative">
-            <div class="absolute -left-3 top-8 w-6 h-6 rounded-full border-2 border-bb-green bg-bb-black flex items-center justify-center">
-              <div class="w-2 h-2 rounded-full bg-bb-green glow-pulse"></div>
+            <div class="absolute -left-3 top-8 w-6 h-6 flex items-center justify-center" style="border:2px solid #a88a2a;background:#111009;">
+              <div class="w-2 h-2 slow-pulse" style="background:#e8c547;"></div>
             </div>
             <div class="pl-12 pt-6">
-              <div class="font-mono text-xs text-bb-muted tracking-widest uppercase mb-2">Transformation Level</div>
-              <div class="w-48 h-1 bg-bb-gray rounded-full overflow-hidden">
-                <div class="h-full bg-gradient-to-r from-bb-green to-bb-cyan rounded-full" style="width:15%;"></div>
+              <div class="font-mono text-xs uppercase mb-2" style="color:#7a6545;letter-spacing:0.15em;"><span data-lang="en">Transformation Level</span><span data-lang="ru">Уровень трансформации</span></div>
+              <div class="w-48 overflow-hidden" style="height:3px;background:#2e2416;">
+                <div style="height:100%;background:#e8c547;width:15%;"></div>
               </div>
-              <div class="font-mono text-xs text-bb-green mt-1">15% — Mr. White</div>
+              <div class="font-mono text-xs mt-1" style="color:#e8c547;"><span data-lang="en">15% — Mr. White</span><span data-lang="ru">15% — Мистер Уайт</span></div>
             </div>
           </div>
         </div>
@@ -422,33 +576,33 @@
         <!-- Season 2 -->
         <div class="lg:grid lg:grid-cols-2 lg:gap-16 lg:mb-16 reveal">
           <div class="hidden lg:flex items-start justify-end pr-0 relative">
-            <div class="absolute -right-3 top-8 w-6 h-6 rounded-full border-2 border-bb-amber bg-bb-black flex items-center justify-center">
-              <div class="w-2 h-2 rounded-full bg-bb-amber glow-pulse"></div>
+            <div class="absolute -right-3 top-8 w-6 h-6 flex items-center justify-center" style="border:2px solid #8a7355;background:#111009;">
+              <div class="w-2 h-2 slow-pulse" style="background:#c8a96e;"></div>
             </div>
             <div class="pr-12 pt-6 text-right">
-              <div class="font-mono text-xs text-bb-muted tracking-widest uppercase mb-2">Transformation Level</div>
+              <div class="font-mono text-xs uppercase mb-2" style="color:#7a6545;letter-spacing:0.15em;"><span data-lang="en">Transformation Level</span><span data-lang="ru">Уровень трансформации</span></div>
               <div class="w-48 h-1 bg-bb-gray rounded-full overflow-hidden ml-auto">
-                <div class="h-full bg-gradient-to-r from-bb-amber to-bb-green rounded-full" style="width:35%;"></div>
+                <div style="height:100%;background:#c8a96e;width:35%;"></div>
               </div>
-              <div class="font-mono text-xs text-bb-amber mt-1">35% — Heisenberg Emerging</div>
+              <div class="font-mono text-xs mt-1" style="color:#c8a96e;"><span data-lang="en">35% — Heisenberg Emerging</span><span data-lang="ru">35% — Хайзенберг пробуждается</span></div>
             </div>
           </div>
           <div class="lg:pl-16 pb-8 lg:pb-0">
-            <div class="glass rounded-sm p-6">
+            <div style="background:#1f1a0f;border:1px solid #2e2416;border-left:3px solid #a88a2a;padding:1.5rem;">
               <div class="flex items-center gap-3 mb-3">
-                <div class="periodic-badge text-bb-amber border-bb-amber" style="padding:3px 8px;">
+                <div class="periodic-badge" style="color:#c8a96e;border-color:#8a7355;padding:3px 8px;">
                   <span class="atomic-num">02</span><span class="symbol" style="font-size:1.4rem;">S2</span><span class="element-name">Season</span>
                 </div>
                 <div>
-                  <div class="font-display text-2xl tracking-wider neon-amber">SEASON TWO</div>
-                  <div class="font-mono text-xs text-bb-muted">2009 · 13 Episodes</div>
+                  <div class="font-display text-2xl tracking-wider" style="color:#c8a96e;"><span data-lang="en">SEASON TWO</span><span data-lang="ru">СЕЗОН ВТОРОЙ</span></div>
+                  <div class="font-mono text-xs" style="color:#7a6545;"><span data-lang="en">2009 · 13 Episodes</span><span data-lang="ru">2009 · 13 Эпизодов</span></div>
                 </div>
               </div>
-              <p class="text-gray-400 text-sm leading-relaxed">The operation expands. Tuco Salamanca. The cartel. A plane crash over Albuquerque. Walter's lies multiply as his alter ego Heisenberg grows stronger. Jane's fate. The consequences of inaction.</p>
+              <p class="text-sm leading-relaxed" style="color:#7a6545;"><span data-lang="en">The operation expands. Tuco Salamanca. The cartel. A plane crash over Albuquerque. Walter's lies multiply as his alter ego Heisenberg grows stronger. Jane's fate. The consequences of inaction.</span><span data-lang="ru">Операция расширяется. Туко Саламанка. Картель. Авиакатастрофа над Альбукерке. Ложь Уолтера множится, а его альтер-эго Хайзенберг становится сильнее. Судьба Джейн. Последствия бездействия.</span></p>
               <div class="flex flex-wrap gap-2 mt-4">
-                <span class="glass px-2 py-1 font-mono text-xs text-bb-amber border border-bb-amber/20">Tuco</span>
-                <span class="glass px-2 py-1 font-mono text-xs text-bb-muted border border-white/10">Jane</span>
-                <span class="glass px-2 py-1 font-mono text-xs text-bb-muted border border-white/10">Plane Crash</span>
+                <span class="font-mono text-xs px-2 py-1" style="color:#c8a96e;border:1px solid #5c3d1e;background:#1f1a0f;">Tuco</span>
+                <span class="font-mono text-xs px-2 py-1" style="color:#7a6545;border:1px solid #2e2416;background:#1f1a0f;">Jane</span>
+                <span class="font-mono text-xs px-2 py-1" style="color:#7a6545;border:1px solid #2e2416;background:#1f1a0f;">Plane Crash</span>
               </div>
             </div>
           </div>
@@ -457,34 +611,34 @@
         <!-- Season 3 -->
         <div class="lg:grid lg:grid-cols-2 lg:gap-16 lg:mb-16 reveal">
           <div class="lg:text-right lg:pr-16 pb-8 lg:pb-0">
-            <div class="glass rounded-sm p-6 inline-block w-full">
+            <div style="background:#1f1a0f;border:1px solid #2e2416;border-left:3px solid #a88a2a;padding:1.5rem;display:inline-block;width:100%;">
               <div class="flex items-center gap-3 lg:justify-end mb-3">
-                <div class="periodic-badge text-bb-cyan border-bb-cyan" style="padding:3px 8px;">
+                <div class="periodic-badge" style="color:#d4bc8a;border-color:#5c3d1e;padding:3px 8px;">
                   <span class="atomic-num">03</span><span class="symbol" style="font-size:1.4rem;">S3</span><span class="element-name">Season</span>
                 </div>
                 <div>
-                  <div class="font-display text-2xl tracking-wider neon-cyan">SEASON THREE</div>
-                  <div class="font-mono text-xs text-bb-muted">2010 · 13 Episodes</div>
+                  <div class="font-display text-2xl tracking-wider" style="color:#d4bc8a;"><span data-lang="en">SEASON THREE</span><span data-lang="ru">СЕЗОН ТРЕТИЙ</span></div>
+                  <div class="font-mono text-xs" style="color:#7a6545;"><span data-lang="en">2010 · 13 Episodes</span><span data-lang="ru">2010 · 13 Эпизодов</span></div>
                 </div>
               </div>
-              <p class="text-gray-400 text-sm leading-relaxed">Gus Fring's superlab. The Cousins. Walter and Jesse cook in an industrial underground facility. The DEA closes in. Gale Boetticher. The most shocking finale yet — a phone call that changes everything.</p>
+              <p class="text-sm leading-relaxed" style="color:#7a6545;"><span data-lang="en">Gus Fring's superlab. The Cousins. Walter and Jesse cook in an industrial underground facility. The DEA closes in. Gale Boetticher. The most shocking finale yet — a phone call that changes everything.</span><span data-lang="ru">Суперлаборатория Гуса Фринга. Братья-близнецы. Уолтер и Джесси варят в промышленном подземном объекте. DEA выходит на след. Гейл Боттихер. Самый шокирующий финал — телефонный звонок, изменивший всё.</span></p>
               <div class="flex flex-wrap gap-2 mt-4 lg:justify-end">
-                <span class="glass px-2 py-1 font-mono text-xs text-bb-cyan border border-bb-cyan/20">Superlab</span>
-                <span class="glass px-2 py-1 font-mono text-xs text-bb-muted border border-white/10">Gus Fring</span>
-                <span class="glass px-2 py-1 font-mono text-xs text-bb-muted border border-white/10">Full Measure</span>
+                <span class="font-mono text-xs px-2 py-1" style="color:#d4bc8a;border:1px solid #5c3d1e;background:#1f1a0f;">Superlab</span>
+                <span class="font-mono text-xs px-2 py-1" style="color:#7a6545;border:1px solid #2e2416;background:#1f1a0f;">Gus Fring</span>
+                <span class="font-mono text-xs px-2 py-1" style="color:#7a6545;border:1px solid #2e2416;background:#1f1a0f;">Full Measure</span>
               </div>
             </div>
           </div>
           <div class="hidden lg:flex items-start justify-start relative">
-            <div class="absolute -left-3 top-8 w-6 h-6 rounded-full border-2 border-bb-cyan bg-bb-black flex items-center justify-center">
-              <div class="w-2 h-2 rounded-full bg-bb-cyan glow-pulse"></div>
+            <div class="absolute -left-3 top-8 w-6 h-6 flex items-center justify-center" style="border:2px solid #5c3d1e;background:#111009;">
+              <div class="w-2 h-2 slow-pulse" style="background:#d4bc8a;"></div>
             </div>
             <div class="pl-12 pt-6">
-              <div class="font-mono text-xs text-bb-muted tracking-widest uppercase mb-2">Transformation Level</div>
-              <div class="w-48 h-1 bg-bb-gray rounded-full overflow-hidden">
-                <div class="h-full bg-gradient-to-r from-bb-cyan to-bb-amber rounded-full" style="width:60%;"></div>
+              <div class="font-mono text-xs uppercase mb-2" style="color:#7a6545;letter-spacing:0.15em;"><span data-lang="en">Transformation Level</span><span data-lang="ru">Уровень трансформации</span></div>
+              <div class="w-48 overflow-hidden" style="height:3px;background:#2e2416;">
+                <div style="height:100%;background:#d4bc8a;width:60%;"></div>
               </div>
-              <div class="font-mono text-xs text-bb-cyan mt-1">60% — Heisenberg</div>
+              <div class="font-mono text-xs mt-1" style="color:#d4bc8a;"><span data-lang="en">60% — Heisenberg</span><span data-lang="ru">60% — Хайзенберг</span></div>
             </div>
           </div>
         </div>
@@ -492,33 +646,33 @@
         <!-- Season 4 -->
         <div class="lg:grid lg:grid-cols-2 lg:gap-16 lg:mb-16 reveal">
           <div class="hidden lg:flex items-start justify-end pr-0 relative">
-            <div class="absolute -right-3 top-8 w-6 h-6 rounded-full border-2 border-bb-red bg-bb-black flex items-center justify-center">
-              <div class="w-2 h-2 rounded-full bg-bb-red glow-pulse"></div>
+            <div class="absolute -right-3 top-8 w-6 h-6 flex items-center justify-center" style="border:2px solid #5c3d1e;background:#111009;">
+              <div class="w-2 h-2 slow-pulse" style="background:#c97d20;"></div>
             </div>
             <div class="pr-12 pt-6 text-right">
-              <div class="font-mono text-xs text-bb-muted tracking-widest uppercase mb-2">Transformation Level</div>
+              <div class="font-mono text-xs uppercase mb-2" style="color:#7a6545;letter-spacing:0.15em;"><span data-lang="en">Transformation Level</span><span data-lang="ru">Уровень трансформации</span></div>
               <div class="w-48 h-1 bg-bb-gray rounded-full overflow-hidden ml-auto">
-                <div class="h-full bg-gradient-to-r from-bb-red to-bb-amber rounded-full" style="width:80%;"></div>
+                <div style="height:100%;background:#c97d20;width:80%;"></div>
               </div>
-              <div class="font-mono text-xs mt-1" style="color:#c0392b;">80% — The Monster</div>
+              <div class="font-mono text-xs mt-1" style="color:#c97d20;"><span data-lang="en">80% — The Monster</span><span data-lang="ru">80% — Монстр</span></div>
             </div>
           </div>
           <div class="lg:pl-16 pb-8 lg:pb-0">
-            <div class="glass rounded-sm p-6">
+            <div style="background:#1f1a0f;border:1px solid #2e2416;border-left:3px solid #a88a2a;padding:1.5rem;">
               <div class="flex items-center gap-3 mb-3">
-                <div class="periodic-badge border-red-700 text-red-500" style="padding:3px 8px;">
+                <div class="periodic-badge" style="color:#c97d20;border-color:#5c3d1e;padding:3px 8px;">
                   <span class="atomic-num">04</span><span class="symbol" style="font-size:1.4rem;">S4</span><span class="element-name">Season</span>
                 </div>
                 <div>
-                  <div class="font-display text-2xl tracking-wider text-red-500" style="text-shadow:0 0 10px rgba(192,57,43,0.5);">SEASON FOUR</div>
-                  <div class="font-mono text-xs text-bb-muted">2011 · 13 Episodes</div>
+                  <div class="font-display text-2xl tracking-wider" style="color:#c97d20;"><span data-lang="en">SEASON FOUR</span><span data-lang="ru">СЕЗОН ЧЕТВЁРТЫЙ</span></div>
+                  <div class="font-mono text-xs" style="color:#7a6545;"><span data-lang="en">2011 · 13 Episodes</span><span data-lang="ru">2011 · 13 Эпизодов</span></div>
                 </div>
               </div>
-              <p class="text-gray-400 text-sm leading-relaxed">Walter vs. Gus. The ultimate chess match. Hector Salamanca. Lily of the Valley. The most celebrated season — a masterclass in tension, manipulation, and the face-off between two brilliant, ruthless men.</p>
+              <p class="text-sm leading-relaxed" style="color:#7a6545;"><span data-lang="en">Walter vs. Gus. The ultimate chess match. Hector Salamanca. Lily of the Valley. The most celebrated season — a masterclass in tension, manipulation, and the face-off between two brilliant, ruthless men.</span><span data-lang="ru">Уолтер против Гуса. Шахматная партия высшего уровня. Гектор Саламанка. Ландыш. Самый признанный сезон — мастер-класс напряжения, манипуляций и противостояния двух блестящих безжалостных людей.</span></p>
               <div class="flex flex-wrap gap-2 mt-4">
-                <span class="glass px-2 py-1 font-mono text-xs text-red-500 border border-red-700/30">Face Off</span>
-                <span class="glass px-2 py-1 font-mono text-xs text-bb-muted border border-white/10">Hector</span>
-                <span class="glass px-2 py-1 font-mono text-xs text-bb-muted border border-white/10">Box Cutter</span>
+                <span class="font-mono text-xs px-2 py-1" style="color:#c97d20;border:1px solid #5c3d1e;background:#1f1a0f;">Face Off</span>
+                <span class="font-mono text-xs px-2 py-1" style="color:#7a6545;border:1px solid #2e2416;background:#1f1a0f;">Hector</span>
+                <span class="font-mono text-xs px-2 py-1" style="color:#7a6545;border:1px solid #2e2416;background:#1f1a0f;"><span data-lang="en">BOX CUTTER</span><span data-lang="ru">КАНЦЕЛЯРСКИЙ НОЖ</span></span>
               </div>
             </div>
           </div>
@@ -527,34 +681,34 @@
         <!-- Season 5 -->
         <div class="lg:grid lg:grid-cols-2 lg:gap-16 reveal">
           <div class="lg:text-right lg:pr-16">
-            <div class="glass rounded-sm p-6 inline-block w-full" style="border-color:rgba(57,255,20,0.3);box-shadow:0 0 30px rgba(57,255,20,0.08);">
+            <div style="background:#1f1a0f;border:1px solid #2e2416;border-left:3px solid #a88a2a;padding:1.5rem;display:inline-block;width:100%;border-color:#a88a2a;border-left:3px solid #e8c547">
               <div class="flex items-center gap-3 lg:justify-end mb-3">
-                <div class="periodic-badge text-bb-green border-bb-green" style="padding:3px 8px;">
+                <div class="periodic-badge" style="color:#e8c547;border-color:#a88a2a;padding:3px 8px;">
                   <span class="atomic-num">05</span><span class="symbol" style="font-size:1.4rem;">S5</span><span class="element-name">Season</span>
                 </div>
                 <div>
-                  <div class="font-display text-2xl tracking-wider neon-green">SEASON FIVE</div>
-                  <div class="font-mono text-xs text-bb-muted">2012–2013 · 16 Episodes</div>
+                  <div class="font-display text-2xl tracking-wider" style="color:#e8c547;"><span data-lang="en">SEASON FIVE</span><span data-lang="ru">СЕЗОН ПЯТЫЙ</span></div>
+                  <div class="font-mono text-xs" style="color:#7a6545;"><span data-lang="en">2012–2013 · 16 Episodes</span><span data-lang="ru">2012–2013 · 16 Эпизодов</span></div>
                 </div>
               </div>
-              <p class="text-gray-400 text-sm leading-relaxed">The empire at its peak. Lydia. Todd. The neo-Nazis. Ozymandias — widely considered the greatest TV episode ever made. Walter White's final reckoning.</p>
+              <p class="text-sm leading-relaxed" style="color:#7a6545;"><span data-lang="en">The empire at its peak. Lydia. Todd. The neo-Nazis. Ozymandias — widely considered the greatest TV episode ever made. Walter White's final reckoning.</span><span data-lang="ru">Империя на пике. Лидия. Тодд. Неонацисты. «Озимандия» — эпизод, который многие считают величайшим в истории телевидения. Последний расчёт Уолтера Уайта.</span></p>
               <div class="flex flex-wrap gap-2 mt-4 lg:justify-end">
-                <span class="glass px-2 py-1 font-mono text-xs text-bb-green border border-bb-green/30">Ozymandias</span>
-                <span class="glass px-2 py-1 font-mono text-xs text-bb-muted border border-white/10">Felina</span>
-                <span class="glass px-2 py-1 font-mono text-xs text-bb-muted border border-white/10">Granite State</span>
+                <span class="font-mono text-xs px-2 py-1" style="color:#e8c547;border:1px solid #a88a2a;background:#1f1a0f;"><span data-lang="en">OZYMANDIAS</span><span data-lang="ru">ОЗИМАНДИЯ</span></span>
+                <span class="font-mono text-xs px-2 py-1" style="color:#7a6545;border:1px solid #2e2416;background:#1f1a0f;">Felina</span>
+                <span class="font-mono text-xs px-2 py-1" style="color:#7a6545;border:1px solid #2e2416;background:#1f1a0f;">Granite State</span>
               </div>
             </div>
           </div>
           <div class="hidden lg:flex items-start justify-start relative">
-            <div class="absolute -left-3 top-8 w-8 h-8 rounded-full border-2 border-bb-green bg-bb-black flex items-center justify-center">
-              <div class="w-3 h-3 rounded-full bg-bb-green" style="box-shadow:0 0 12px rgba(57,255,20,0.8);"></div>
+            <div class="absolute -left-3 top-8 w-8 h-8 flex items-center justify-center" style="border:2px solid #a88a2a;background:#111009;">
+              <div class="w-3 h-3 slow-pulse" style="background:#e8c547;"></div>
             </div>
             <div class="pl-14 pt-6">
-              <div class="font-mono text-xs text-bb-muted tracking-widest uppercase mb-2">Transformation Level</div>
-              <div class="w-48 h-1 bg-bb-gray rounded-full overflow-hidden">
-                <div class="h-full bg-gradient-to-r from-bb-green to-bb-red rounded-full" style="width:100%;"></div>
+              <div class="font-mono text-xs uppercase mb-2" style="color:#7a6545;letter-spacing:0.15em;"><span data-lang="en">Transformation Level</span><span data-lang="ru">Уровень трансформации</span></div>
+              <div class="w-48 overflow-hidden" style="height:3px;background:#2e2416;">
+                <div style="height:100%;background:linear-gradient(90deg,#e8c547,#c97d20);width:100%;"></div>
               </div>
-              <div class="font-mono text-xs neon-green mt-1">100% — Heisenberg</div>
+              <div class="font-mono text-xs mt-1" style="color:#e8c547;"><span data-lang="en">100% — Heisenberg</span><span data-lang="ru">100% — Хайзенберг</span></div>
             </div>
           </div>
         </div>
@@ -569,86 +723,116 @@
 <!-- ═══════════════════════════════════════════════════════════════
      ICONIC SCENES GALLERY
 ═══════════════════════════════════════════════════════════════ -->
-<section id="gallery" class="relative py-24 bg-bb-dark overflow-hidden">
+<section id="gallery" class="relative py-24 overflow-hidden" style="background:#1a1208;">
   <div class="max-w-7xl mx-auto px-4 md:px-8 relative z-10">
 
     <div class="text-center mb-16 reveal">
       <div class="flex items-center justify-center gap-4 mb-4">
-        <div class="h-px w-16 bg-gradient-to-r from-transparent to-bb-amber opacity-60"></div>
-        <span class="font-mono text-xs tracking-[0.3em] text-bb-amber uppercase">Visual Archive</span>
-        <div class="h-px w-16 bg-gradient-to-l from-transparent to-bb-amber opacity-60"></div>
+        <div style="height:1px;width:64px;background:linear-gradient(90deg,transparent,#a88a2a);opacity:0.7;"></div>
+        <span class="font-mono text-xs uppercase" style="color:#8a7355;letter-spacing:0.3em;"><span data-lang="en">Visual Archive</span><span data-lang="ru">Визуальный архив</span></span>
+        <div style="height:1px;width:64px;background:linear-gradient(270deg,transparent,#a88a2a);opacity:0.7;"></div>
       </div>
-      <h2 class="font-display text-6xl md:text-7xl tracking-wider mb-4">ICONIC SCENES</h2>
-      <p class="text-bb-muted font-mono text-sm tracking-wider max-w-xl mx-auto">Moments burned into television history. Hover to reveal.</p>
+      <h2 class="font-display text-6xl md:text-7xl tracking-wider mb-4" style="color:#d4bc8a;"><span data-lang="en">ICONIC SCENES</span><span data-lang="ru">КУЛЬТОВЫЕ СЦЕНЫ</span></h2>
+      <p class="font-mono text-sm tracking-wider max-w-xl mx-auto" style="color:#7a6545;"><span data-lang="en">Moments burned into television history. Hover to reveal.</span><span data-lang="ru">Моменты, вошедшие в историю телевидения. Наведите, чтобы открыть.</span></p>
     </div>
 
     <div class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-3 reveal">
 
-      <div class="scene-card rounded-sm col-span-2 row-span-2" style="height:400px;">
-        <img src="https://images.unsplash.com/photo-1509316785289-025f5b846b35?w=800&q=80"
+      <div class="scene-card rounded-sm col-span-2 row-span-2" style="height:400px;cursor:pointer;"
+           data-lb-src="static/images/rv_lab.jpg"
+           data-lb-title="THE DESERT COOK"
+           data-lb-title-ru="ВАРКА В ПУСТЫНЕ"
+           data-lb-episode="S01 · E01"
+           onclick="bbLightboxOpen(this)" role="button" tabindex="0" aria-label="Open image: The Desert Cook">
+        <img src="static/images/rv_lab.jpg"
              alt="Vast desert landscape at golden hour — Albuquerque New Mexico setting"
-             class="absolute inset-0" />
+             class="absolute inset-0" style="width:100%;height:100%;object-fit:cover;filter:saturate(0.35) contrast(1.2) sepia(0.3) brightness(0.75);" />
         <div class="scene-overlay"></div>
         <div class="absolute inset-0 flex flex-col justify-end p-6 opacity-0 hover:opacity-100 transition-opacity duration-300">
-          <span class="font-mono text-xs text-bb-amber tracking-widest uppercase mb-1">S01 · E01</span>
-          <h3 class="font-display text-2xl tracking-wider neon-amber">THE DESERT COOK</h3>
-          <p class="text-gray-400 text-sm mt-1">The RV. The first batch. The beginning of everything.</p>
+          <span class="font-mono text-xs uppercase mb-1" style="color:#c8a96e;letter-spacing:0.2em;">S01 · E01</span>
+          <h3 class="font-display text-2xl tracking-wider" style="color:#e8c547;"><span data-lang="en">THE DESERT COOK</span><span data-lang="ru">ВАРКА В ПУСТЫНЕ</span></h3>
+          <p class="text-sm mt-1" style="color:#7a6545;"><span data-lang="en">The RV. The first batch. The beginning of everything.</span><span data-lang="ru">Фургон. Первая партия. Начало всего.</span></p>
         </div>
       </div>
 
-      <div class="scene-card rounded-sm" style="height:195px;">
-        <img src="https://images.unsplash.com/photo-1532187863486-abf9dbad1b69?w=500&q=80"
-             alt="Chemistry laboratory glassware with blue liquid — superlab aesthetic"
-             class="absolute inset-0" style="filter:hue-rotate(180deg) saturate(1.5);" />
+      <div class="scene-card rounded-sm" style="height:195px;cursor:pointer;"
+           data-lb-src="static/images/the_superlab.jpg"
+           data-lb-title="THE SUPERLAB"
+           data-lb-title-ru="СУПЕРЛАБОРАТОРИЯ"
+           data-lb-episode="S03 · E01"
+           onclick="bbLightboxOpen(this)" role="button" tabindex="0" aria-label="Open image: The Superlab">
+        <img src="static/images/the_superlab.jpg"
+             alt="Jesse Pinkman in yellow hazmat suit cooking blue crystals in the superlab"
+             class="absolute inset-0" style="width:100%;height:100%;object-fit:cover;filter:saturate(0.8) contrast(1.1) brightness(0.62);" />
         <div class="scene-overlay"></div>
         <div class="absolute inset-0 flex flex-col justify-end p-4 opacity-0 hover:opacity-100 transition-opacity duration-300">
-          <span class="font-mono text-xs text-bb-cyan tracking-widest uppercase mb-1">S03 · E01</span>
-          <h3 class="font-display text-lg tracking-wider neon-cyan">THE SUPERLAB</h3>
+          <span class="font-mono text-xs uppercase mb-1" style="color:#8a7355;letter-spacing:0.2em;">S03 · E01</span>
+          <h3 class="font-display text-lg tracking-wider" style="color:#d4bc8a;"><span data-lang="en">THE SUPERLAB</span><span data-lang="ru">СУПЕРЛАБОРАТОРИЯ</span></h3>
         </div>
       </div>
 
-      <div class="scene-card rounded-sm" style="height:195px;">
-        <img src="https://images.unsplash.com/photo-1565043589221-1a6fd9ae45c7?w=500&q=80"
-             alt="Dark industrial corridor with dramatic lighting — underground facility"
-             class="absolute inset-0" style="filter:grayscale(30%) contrast(1.2);" />
+      <div class="scene-card rounded-sm" style="height:195px;cursor:pointer;"
+           data-lb-src="static/images/box_cutter.jpg"
+           data-lb-title="BOX CUTTER"
+           data-lb-title-ru="КАНЦЕЛЯРСКИЙ НОЖ"
+           data-lb-episode="S04 · E01"
+           onclick="bbLightboxOpen(this)" role="button" tabindex="0" aria-label="Open image: Box Cutter">
+        <img src="static/images/box_cutter.jpg"
+             alt="Walter White frightened, blue-green glow, box cutter scene"
+             class="absolute inset-0" style="width:100%;height:100%;object-fit:cover;filter:saturate(0.5) contrast(1.35) brightness(0.65) hue-rotate(160deg);" />
         <div class="scene-overlay"></div>
         <div class="absolute inset-0 flex flex-col justify-end p-4 opacity-0 hover:opacity-100 transition-opacity duration-300">
-          <span class="font-mono text-xs text-bb-muted tracking-widest uppercase mb-1">S04 · E01</span>
-          <h3 class="font-display text-lg tracking-wider text-white">BOX CUTTER</h3>
+          <span class="font-mono text-xs uppercase mb-1" style="color:#8a7355;letter-spacing:0.2em;">S04 · E01</span>
+          <h3 class="font-display text-lg tracking-wider" style="color:#d4bc8a;"><span data-lang="en">BOX CUTTER</span><span data-lang="ru">КАНЦЕЛЯРСКИЙ НОЖ</span></h3>
         </div>
       </div>
 
-      <div class="scene-card rounded-sm" style="height:195px;">
-        <img src="https://images.unsplash.com/photo-1518709268805-4e9042af9f23?w=500&q=80"
-             alt="Dramatic smoke and atmospheric haze — cinematic tension"
-             class="absolute inset-0" style="filter:grayscale(50%) contrast(1.3);" />
+      <div class="scene-card rounded-sm" style="height:195px;cursor:pointer;"
+           data-lb-src="static/images/ozymandias.webp"
+           data-lb-title="OZYMANDIAS"
+           data-lb-title-ru="ОЗИМАНДИЯ"
+           data-lb-episode="S05 · E14"
+           onclick="bbLightboxOpen(this)" role="button" tabindex="0" aria-label="Open image: Ozymandias">
+        <img src="static/images/ozymandias.webp"
+             alt="Walter White lying in the desert sand — Ozymandias"
+             class="absolute inset-0" style="width:100%;height:100%;object-fit:cover;filter:saturate(0.45) contrast(1.2) sepia(0.55) brightness(0.72);" />
         <div class="scene-overlay"></div>
         <div class="absolute inset-0 flex flex-col justify-end p-4 opacity-0 hover:opacity-100 transition-opacity duration-300">
-          <span class="font-mono text-xs text-bb-green tracking-widest uppercase mb-1">S05 · E14</span>
-          <h3 class="font-display text-lg tracking-wider neon-green">OZYMANDIAS</h3>
+          <span class="font-mono text-xs uppercase mb-1" style="color:#c8a96e;letter-spacing:0.2em;">S05 · E14</span>
+          <h3 class="font-display text-lg tracking-wider" style="color:#e8c547;"><span data-lang="en">OZYMANDIAS</span><span data-lang="ru">ОЗИМАНДИЯ</span></h3>
         </div>
       </div>
 
-      <div class="scene-card rounded-sm" style="height:195px;">
-        <img src="https://images.unsplash.com/photo-1475924156734-496f6cac6ec1?w=500&q=80"
-             alt="Starry night sky over desert — New Mexico atmosphere"
-             class="absolute inset-0" style="filter:saturate(0.7) contrast(1.2);" />
+      <div class="scene-card rounded-sm" style="height:195px;cursor:pointer;"
+           data-lb-src="static/images/abq.jpg"
+           data-lb-title="ABQ"
+           data-lb-title-ru="ABQ"
+           data-lb-episode="S02 · E13"
+           onclick="bbLightboxOpen(this)" role="button" tabindex="0" aria-label="Open image: ABQ">
+        <img src="static/images/abq.jpg"
+             alt="Frightened Jesse Pinkman at home, Mike arrives — ABQ"
+             class="absolute inset-0" style="width:100%;height:100%;object-fit:cover;filter:saturate(0.25) contrast(1.3) brightness(0.6) hue-rotate(200deg);" />
         <div class="scene-overlay"></div>
         <div class="absolute inset-0 flex flex-col justify-end p-4 opacity-0 hover:opacity-100 transition-opacity duration-300">
-          <span class="font-mono text-xs text-bb-cyan tracking-widest uppercase mb-1">S02 · E13</span>
-          <h3 class="font-display text-lg tracking-wider neon-cyan">ABQ</h3>
+          <span class="font-mono text-xs uppercase mb-1" style="color:#8a7355;letter-spacing:0.2em;">S02 · E13</span>
+          <h3 class="font-display text-lg tracking-wider" style="color:#d4bc8a;">ABQ</h3>
         </div>
       </div>
 
-      <div class="scene-card rounded-sm col-span-2" style="height:195px;">
-        <img src="https://images.unsplash.com/photo-1504307651254-35680f356dfd?w=800&q=80"
+      <div class="scene-card rounded-sm col-span-2" style="height:195px;cursor:pointer;"
+           data-lb-src="static/images/los_pollos.jpg"
+           data-lb-title="LOS POLLOS HERMANOS"
+           data-lb-title-ru="ЛОС ПОЛЛОС ЭРМАНОС"
+           data-lb-episode="S03 · E10"
+           onclick="bbLightboxOpen(this)" role="button" tabindex="0" aria-label="Open image: Los Pollos Hermanos">
+        <img src="static/images/los_pollos.jpg"
              alt="Large industrial warehouse interior — Los Pollos Hermanos distribution"
              class="absolute inset-0" style="filter:grayscale(40%) contrast(1.15) saturate(0.6);" />
         <div class="scene-overlay"></div>
         <div class="absolute inset-0 flex flex-col justify-end p-6 opacity-0 hover:opacity-100 transition-opacity duration-300">
-          <span class="font-mono text-xs text-bb-amber tracking-widest uppercase mb-1">S03 · E10</span>
-          <h3 class="font-display text-2xl tracking-wider neon-amber">LOS POLLOS HERMANOS</h3>
-          <p class="text-gray-400 text-sm mt-1">The legitimate front. The distribution network. The empire beneath.</p>
+          <span class="font-mono text-xs uppercase mb-1" style="color:#c8a96e;letter-spacing:0.2em;">S03 · E10</span>
+          <h3 class="font-display text-2xl tracking-wider" style="color:#e8c547;"><span data-lang="en">LOS POLLOS HERMANOS</span><span data-lang="ru">ЛОС ПОЛЛОС ЭРМАНОС</span></h3>
+          <p class="text-sm mt-1" style="color:#7a6545;"><span data-lang="en">The legitimate front. The distribution network. The empire beneath.</span><span data-lang="ru">Легальное прикрытие. Сеть дистрибуции. Империя под землёй.</span></p>
         </div>
       </div>
 
@@ -665,43 +849,131 @@
 <div class="chem-divider"></div>
 
 <!-- ═══════════════════════════════════════════════════════════════
+     TRAILER SECTION
+═══════════════════════════════════════════════════════════════ -->
+<section id="trailer" class="relative py-24 overflow-hidden" style="background:#111009;">
+  <div class="absolute inset-0 pointer-events-none">
+    <div class="absolute top-0 left-1/3 w-96 h-96 rounded-full opacity-5"
+         style="background:radial-gradient(circle,#e8c547,transparent);filter:blur(100px);"></div>
+    <div class="absolute bottom-0 right-1/3 w-96 h-96 rounded-full opacity-4"
+         style="background:radial-gradient(circle,#8b3a1a,transparent);filter:blur(100px);"></div>
+  </div>
+
+  <div class="max-w-5xl mx-auto px-4 md:px-8 relative z-10">
+
+    <!-- Section header -->
+    <div class="text-center mb-14 reveal">
+      <div class="flex items-center justify-center gap-4 mb-4">
+        <div style="height:1px;width:64px;background:linear-gradient(90deg,transparent,#a88a2a);opacity:0.7;"></div>
+        <span class="font-mono text-xs uppercase" style="color:#8a7355;letter-spacing:0.3em;">
+          <span data-lang="en">Official Trailer</span><span data-lang="ru">Официальный трейлер</span>
+        </span>
+        <div style="height:1px;width:64px;background:linear-gradient(270deg,transparent,#a88a2a);opacity:0.7;"></div>
+      </div>
+      <h2 class="font-display text-6xl md:text-7xl tracking-wider mb-4" style="color:#d4bc8a;">
+        <span data-lang="en">WATCH THE TRAILER</span><span data-lang="ru">СМОТРЕТЬ ТРЕЙЛЕР</span>
+      </h2>
+      <p class="font-mono text-sm tracking-wider max-w-xl mx-auto" style="color:#7a6545;">
+        <span data-lang="en">Say my name.</span><span data-lang="ru">Назови моё имя.</span>
+      </p>
+    </div>
+
+    <!-- Video player wrapper -->
+    <div class="reveal" style="position:relative;">
+      <!-- Hazard stripe top -->
+      <div style="height:5px;background:repeating-linear-gradient(-45deg,#e8c547 0px,#e8c547 8px,#0d0b08 8px,#0d0b08 16px);opacity:0.7;"></div>
+
+      <!-- Outer border glow -->
+      <div style="border:1px solid #2e2416;background:#0d0b08;position:relative;">
+
+        <!-- Corner accents -->
+        <div style="position:absolute;top:0;left:0;width:20px;height:20px;border-top:2px solid #a88a2a;border-left:2px solid #a88a2a;z-index:2;"></div>
+        <div style="position:absolute;top:0;right:0;width:20px;height:20px;border-top:2px solid #a88a2a;border-right:2px solid #a88a2a;z-index:2;"></div>
+        <div style="position:absolute;bottom:0;left:0;width:20px;height:20px;border-bottom:2px solid #a88a2a;border-left:2px solid #a88a2a;z-index:2;"></div>
+        <div style="position:absolute;bottom:0;right:0;width:20px;height:20px;border-bottom:2px solid #a88a2a;border-right:2px solid #a88a2a;z-index:2;"></div>
+
+        <!-- Video element -->
+        <video
+          id="trailer-video"
+          class="w-full block"
+          style="aspect-ratio:16/9;background:#0d0b08;display:block;"
+          controls
+          preload="metadata"
+          poster="static/images/promo_image.webp"
+          aria-label="Breaking Bad official trailer"
+        >
+          <source src="static/videos/breaking_bad_trailer.mp4" type="video/mp4" />
+          <span data-lang="en">Your browser does not support the video tag.</span>
+          <span data-lang="ru">Ваш браузер не поддерживает воспроизведение видео.</span>
+        </video>
+      </div>
+
+      <!-- Hazard stripe bottom -->
+      <div style="height:5px;background:repeating-linear-gradient(-45deg,#e8c547 0px,#e8c547 8px,#0d0b08 8px,#0d0b08 16px);opacity:0.7;"></div>
+
+      <!-- Meta bar below video -->
+      <div class="flex items-center justify-between mt-4 px-1">
+        <div class="flex items-center gap-6">
+          <div class="flex items-center gap-2">
+            <div style="width:8px;height:8px;background:#e8c547;border-radius:50%;"></div>
+            <span class="font-mono text-xs" style="color:#7a6545;letter-spacing:0.15em;">AMC · 2008</span>
+          </div>
+          <div class="font-mono text-xs" style="color:#5c3d1e;">
+            <span data-lang="en">Breaking Bad — Official Trailer</span>
+            <span data-lang="ru">Во все тяжкие — Официальный трейлер</span>
+          </div>
+        </div>
+        <div class="periodic-badge" style="color:#8a7355;border-color:#2e2416;padding:2px 8px;font-size:0.6rem;">
+          <span class="atomic-num">35</span>
+          <span class="symbol" style="font-size:0.9rem;">Br</span>
+          <span class="element-name">Bromine</span>
+        </div>
+      </div>
+    </div>
+
+  </div>
+</section>
+
+<div class="chem-divider"></div>
+
+<!-- ═══════════════════════════════════════════════════════════════
      CHEMISTRY DATA PANELS
 ═══════════════════════════════════════════════════════════════ -->
-<section class="relative py-24 bg-bb-black overflow-hidden">
+<section class="relative py-24 overflow-hidden" style="background:#111009;">
   <div class="absolute inset-0 pointer-events-none opacity-5"
-       style="background-image:linear-gradient(rgba(57,255,20,0.3) 1px,transparent 1px),linear-gradient(90deg,rgba(57,255,20,0.3) 1px,transparent 1px);background-size:60px 60px;"></div>
+       style="background-image:linear-gradient(rgba(200,169,110,0.06) 1px,transparent 1px),linear-gradient(90deg,rgba(200,169,110,0.06) 1px,transparent 1px);background-size:60px 60px;"></div>
 
   <div class="max-w-7xl mx-auto px-4 md:px-8 relative z-10">
     <div class="text-center mb-16 reveal">
       <div class="flex items-center justify-center gap-4 mb-4">
-        <div class="h-px w-16 bg-gradient-to-r from-transparent to-bb-green opacity-60"></div>
-        <span class="font-mono text-xs tracking-[0.3em] text-bb-green uppercase">Laboratory Data</span>
-        <div class="h-px w-16 bg-gradient-to-l from-transparent to-bb-green opacity-60"></div>
+        <div style="height:1px;width:64px;background:linear-gradient(90deg,transparent,#a88a2a);opacity:0.7;"></div>
+        <span class="font-mono text-xs uppercase" style="color:#8a7355;letter-spacing:0.3em;"><span data-lang="en">Laboratory Data</span><span data-lang="ru">Данные лаборатории</span></span>
+        <div style="height:1px;width:64px;background:linear-gradient(270deg,transparent,#a88a2a);opacity:0.7;"></div>
       </div>
-      <h2 class="font-display text-6xl md:text-7xl tracking-wider mb-4">THE CHEMISTRY</h2>
+      <h2 class="font-display text-6xl md:text-7xl tracking-wider mb-4" style="color:#d4bc8a;"><span data-lang="en">THE CHEMISTRY</span><span data-lang="ru">ХИМИЯ</span></h2>
     </div>
 
     <!-- Periodic elements row -->
     <div class="flex flex-wrap justify-center gap-4 mb-16 reveal">
-      <div class="periodic-badge text-bb-green border-bb-green hover:shadow-neon-green transition-all duration-300 cursor-pointer" style="padding:10px 18px;min-width:90px;">
+      <div class="periodic-badge transition-all duration-300 cursor-pointer" style="color:#e8c547;border-color:#a88a2a;padding:10px 18px;min-width:90px">
         <span class="atomic-num">35</span><span class="symbol" style="font-size:3rem;">Br</span><span class="element-name">Bromine</span>
       </div>
-      <div class="periodic-badge text-bb-amber border-bb-amber hover:shadow-neon-amber transition-all duration-300 cursor-pointer" style="padding:10px 18px;min-width:90px;">
+      <div class="periodic-badge transition-all duration-300 cursor-pointer" style="color:#c8a96e;border-color:#8a7355;padding:10px 18px;min-width:90px">
         <span class="atomic-num">56</span><span class="symbol" style="font-size:3rem;">Ba</span><span class="element-name">Barium</span>
       </div>
-      <div class="periodic-badge text-bb-cyan border-bb-cyan hover:shadow-neon-cyan transition-all duration-300 cursor-pointer" style="padding:10px 18px;min-width:90px;">
+      <div class="periodic-badge transition-all duration-300 cursor-pointer" style="color:#d4bc8a;border-color:#5c3d1e;padding:10px 18px;min-width:90px">
         <span class="atomic-num">2</span><span class="symbol" style="font-size:3rem;">He</span><span class="element-name">Helium</span>
       </div>
-      <div class="periodic-badge text-gray-400 border-gray-600 hover:border-gray-400 transition-all duration-300 cursor-pointer" style="padding:10px 18px;min-width:90px;">
+      <div class="periodic-badge transition-all duration-300 cursor-pointer" style="color:#7a6545;border-color:#2e2416;padding:10px 18px;min-width:90px">
         <span class="atomic-num">6</span><span class="symbol" style="font-size:3rem;">C</span><span class="element-name">Carbon</span>
       </div>
-      <div class="periodic-badge text-gray-400 border-gray-600 hover:border-gray-400 transition-all duration-300 cursor-pointer" style="padding:10px 18px;min-width:90px;">
+      <div class="periodic-badge transition-all duration-300 cursor-pointer" style="color:#7a6545;border-color:#2e2416;padding:10px 18px;min-width:90px">
         <span class="atomic-num">7</span><span class="symbol" style="font-size:3rem;">N</span><span class="element-name">Nitrogen</span>
       </div>
-      <div class="periodic-badge text-gray-400 border-gray-600 hover:border-gray-400 transition-all duration-300 cursor-pointer" style="padding:10px 18px;min-width:90px;">
+      <div class="periodic-badge transition-all duration-300 cursor-pointer" style="color:#7a6545;border-color:#2e2416;padding:10px 18px;min-width:90px">
         <span class="atomic-num">1</span><span class="symbol" style="font-size:3rem;">H</span><span class="element-name">Hydrogen</span>
       </div>
-      <div class="periodic-badge text-gray-400 border-gray-600 hover:border-gray-400 transition-all duration-300 cursor-pointer" style="padding:10px 18px;min-width:90px;">
+      <div class="periodic-badge transition-all duration-300 cursor-pointer" style="color:#7a6545;border-color:#2e2416;padding:10px 18px;min-width:90px">
         <span class="atomic-num">8</span><span class="symbol" style="font-size:3rem;">O</span><span class="element-name">Oxygen</span>
       </div>
     </div>
@@ -710,102 +982,102 @@
     <div class="grid md:grid-cols-2 lg:grid-cols-3 gap-6 reveal">
 
       <!-- Production Stats -->
-      <div class="glass rounded-sm p-6 fact-card border border-white/5">
+      <div class="fact-card" style="background:#1f1a0f;border:1px solid #2e2416;padding:1.5rem;">
         <div class="flex items-center gap-3 mb-5">
-          <div class="w-8 h-8 rounded-sm bg-bb-green/10 border border-bb-green/30 flex items-center justify-center">
-            <svg class="w-4 h-4 text-bb-green" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24" aria-hidden="true">
+          <div class="w-8 h-8 flex items-center justify-center" style="background:rgba(232,197,71,0.08);border:1px solid #a88a2a;">
+            <svg class="w-4 h-4" style="color:#e8c547;" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24" aria-hidden="true">
               <path d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"/>
             </svg>
           </div>
-          <span class="font-mono text-xs tracking-widest text-bb-green uppercase">Production Data</span>
+          <span class="font-mono text-xs uppercase" style="color:#e8c547;letter-spacing:0.2em;"><span data-lang="en">Production Data</span><span data-lang="ru">Данные производства</span></span>
         </div>
         <div class="space-y-4">
           <div>
             <div class="flex justify-between mb-1">
-              <span class="font-mono text-xs text-bb-muted">Purity Level</span>
-              <span class="font-mono text-xs text-bb-green">99.1%</span>
+              <span class="font-mono text-xs" style="color:#7a6545;"><span data-lang="en">Purity Level</span><span data-lang="ru">Уровень чистоты</span></span>
+              <span class="font-mono text-xs" style="color:#e8c547;">99.1%</span>
             </div>
-            <div class="h-1 bg-bb-gray rounded-full overflow-hidden">
-              <div class="h-full bg-gradient-to-r from-bb-green to-bb-cyan rounded-full progress-bar" style="width:99.1%;"></div>
-            </div>
-          </div>
-          <div>
-            <div class="flex justify-between mb-1">
-              <span class="font-mono text-xs text-bb-muted">Market Share</span>
-              <span class="font-mono text-xs text-bb-amber">68%</span>
-            </div>
-            <div class="h-1 bg-bb-gray rounded-full overflow-hidden">
-              <div class="h-full bg-gradient-to-r from-bb-amber to-bb-yellow rounded-full progress-bar" style="width:68%;"></div>
+            <div class="overflow-hidden" style="height:3px;background:#2e2416;">
+              <div class="progress-bar" style="width:99.1%;background:#e8c547;"></div>
             </div>
           </div>
           <div>
             <div class="flex justify-between mb-1">
-              <span class="font-mono text-xs text-bb-muted">Distribution Network</span>
-              <span class="font-mono text-xs text-bb-cyan">84%</span>
+              <span class="font-mono text-xs" style="color:#7a6545;"><span data-lang="en">Market Share</span><span data-lang="ru">Доля рынка</span></span>
+              <span class="font-mono text-xs" style="color:#c8a96e;">68%</span>
             </div>
-            <div class="h-1 bg-bb-gray rounded-full overflow-hidden">
-              <div class="h-full bg-gradient-to-r from-bb-cyan to-bb-green rounded-full progress-bar" style="width:84%;"></div>
+            <div class="overflow-hidden" style="height:3px;background:#2e2416;">
+              <div class="progress-bar" style="width:68%;background:#c8a96e;"></div>
+            </div>
+          </div>
+          <div>
+            <div class="flex justify-between mb-1">
+              <span class="font-mono text-xs" style="color:#7a6545;"><span data-lang="en">Distribution Network</span><span data-lang="ru">Сеть дистрибуции</span></span>
+              <span class="font-mono text-xs" style="color:#d4bc8a;">84%</span>
+            </div>
+            <div class="overflow-hidden" style="height:3px;background:#2e2416;">
+              <div class="progress-bar" style="width:84%;background:#d4bc8a;"></div>
             </div>
           </div>
         </div>
       </div>
 
       <!-- Empire Metrics -->
-      <div class="glass rounded-sm p-6 fact-card border border-white/5">
+      <div class="fact-card" style="background:#1f1a0f;border:1px solid #2e2416;padding:1.5rem;">
         <div class="flex items-center gap-3 mb-5">
-          <div class="w-8 h-8 rounded-sm bg-bb-amber/10 border border-bb-amber/30 flex items-center justify-center">
-            <svg class="w-4 h-4 text-bb-amber" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24" aria-hidden="true">
+          <div class="w-8 h-8 flex items-center justify-center" style="background:rgba(200,169,110,0.08);border:1px solid #8a7355;">
+            <svg class="w-4 h-4" style="color:#c8a96e;" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24" aria-hidden="true">
               <path d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/>
             </svg>
           </div>
-          <span class="font-mono text-xs tracking-widest text-bb-amber uppercase">Empire Metrics</span>
+          <span class="font-mono text-xs uppercase" style="color:#c8a96e;letter-spacing:0.2em;"><span data-lang="en">Empire Metrics</span><span data-lang="ru">Метрики империи</span></span>
         </div>
         <div class="grid grid-cols-2 gap-4">
-          <div class="glass rounded-sm p-3 text-center">
-            <div class="font-display text-2xl neon-green">$80M</div>
-            <div class="font-mono text-xs text-bb-muted mt-1">Total Earnings</div>
+          <div class="p-3 text-center" style="background:#111009;border:1px solid #2e2416;">
+            <div class="font-display text-2xl" style="color:#e8c547;">$80M</div>
+            <div class="font-mono text-xs mt-1" style="color:#7a6545;"><span data-lang="en">Total Earnings</span><span data-lang="ru">Общий доход</span></div>
           </div>
-          <div class="glass rounded-sm p-3 text-center">
-            <div class="font-display text-2xl neon-amber">200 lbs</div>
-            <div class="font-mono text-xs text-bb-muted mt-1">Weekly Output</div>
+          <div class="p-3 text-center" style="background:#111009;border:1px solid #2e2416;">
+            <div class="font-display text-2xl" style="color:#c8a96e;">200 lbs</div>
+            <div class="font-mono text-xs mt-1" style="color:#7a6545;"><span data-lang="en">Weekly Output</span><span data-lang="ru">Недельный объём</span></div>
           </div>
-          <div class="glass rounded-sm p-3 text-center">
-            <div class="font-display text-2xl neon-cyan">3</div>
-            <div class="font-mono text-xs text-bb-muted mt-1">Lab Locations</div>
+          <div class="p-3 text-center" style="background:#111009;border:1px solid #2e2416;">
+            <div class="font-display text-2xl" style="color:#d4bc8a;">3</div>
+            <div class="font-mono text-xs mt-1" style="color:#7a6545;"><span data-lang="en">Lab Locations</span><span data-lang="ru">Лаборатории</span></div>
           </div>
-          <div class="glass rounded-sm p-3 text-center">
-            <div class="font-display text-2xl text-red-500">167</div>
-            <div class="font-mono text-xs text-bb-muted mt-1">Casualties</div>
+          <div class="p-3 text-center" style="background:#111009;border:1px solid #2e2416;">
+            <div class="font-display text-2xl" style="color:#8b3a1a;">167</div>
+            <div class="font-mono text-xs mt-1" style="color:#7a6545;"><span data-lang="en">Casualties</span><span data-lang="ru">Жертвы</span></div>
           </div>
         </div>
       </div>
 
       <!-- Awards -->
-      <div class="glass rounded-sm p-6 fact-card border border-white/5 md:col-span-2 lg:col-span-1">
+      <div class="fact-card md:col-span-2 lg:col-span-1" style="background:#1f1a0f;border:1px solid #2e2416;padding:1.5rem;">
         <div class="flex items-center gap-3 mb-5">
-          <div class="w-8 h-8 rounded-sm bg-bb-cyan/10 border border-bb-cyan/30 flex items-center justify-center">
-            <svg class="w-4 h-4 text-bb-cyan" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24" aria-hidden="true">
+          <div class="w-8 h-8 flex items-center justify-center" style="background:rgba(212,188,138,0.08);border:1px solid #5c3d1e;">
+            <svg class="w-4 h-4" style="color:#d4bc8a;" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24" aria-hidden="true">
               <path d="M5 3v4M3 5h4M6 17v4m-2-2h4m5-16l2.286 6.857L21 12l-5.714 2.143L13 21l-2.286-6.857L5 12l5.714-2.143L13 3z"/>
             </svg>
           </div>
-          <span class="font-mono text-xs tracking-widest text-bb-cyan uppercase">Recognition</span>
+          <span class="font-mono text-xs uppercase" style="color:#d4bc8a;letter-spacing:0.2em;"><span data-lang="en">Recognition</span><span data-lang="ru">Награды</span></span>
         </div>
         <div class="space-y-3">
-          <div class="flex items-center justify-between glass rounded-sm px-4 py-3">
-            <span class="font-mono text-xs text-gray-300">Emmy Awards</span>
-            <span class="font-display text-xl neon-green">16</span>
+          <div class="flex items-center justify-between px-4 py-3" style="background:#111009;border:1px solid #2e2416;">
+            <span class="font-mono text-xs" style="color:#8a7355;"><span data-lang="en">Emmy Awards</span><span data-lang="ru">Премии Эмми</span></span>
+            <span class="font-display text-xl" style="color:#e8c547;">16</span>
           </div>
-          <div class="flex items-center justify-between glass rounded-sm px-4 py-3">
-            <span class="font-mono text-xs text-gray-300">Golden Globes</span>
-            <span class="font-display text-xl neon-amber">2</span>
+          <div class="flex items-center justify-between px-4 py-3" style="background:#111009;border:1px solid #2e2416;">
+            <span class="font-mono text-xs" style="color:#8a7355;"><span data-lang="en">Golden Globes</span><span data-lang="ru">Золотые глобусы</span></span>
+            <span class="font-display text-xl" style="color:#c8a96e;">2</span>
           </div>
-          <div class="flex items-center justify-between glass rounded-sm px-4 py-3">
-            <span class="font-mono text-xs text-gray-300">SAG Awards</span>
-            <span class="font-display text-xl neon-cyan">1</span>
+          <div class="flex items-center justify-between px-4 py-3" style="background:#111009;border:1px solid #2e2416;">
+            <span class="font-mono text-xs" style="color:#8a7355;"><span data-lang="en">SAG Awards</span><span data-lang="ru">Премии SAG</span></span>
+            <span class="font-display text-xl" style="color:#d4bc8a;">1</span>
           </div>
-          <div class="flex items-center justify-between glass rounded-sm px-4 py-3">
-            <span class="font-mono text-xs text-gray-300">Guinness World Record</span>
-            <span class="font-mono text-xs text-bb-green">Highest Rated TV</span>
+          <div class="flex items-center justify-between px-4 py-3" style="background:#111009;border:1px solid #2e2416;">
+            <span class="font-mono text-xs" style="color:#8a7355;"><span data-lang="en">Guinness World Record</span><span data-lang="ru">Рекорд Гиннесса</span></span>
+            <span class="font-mono text-xs" style="color:#e8c547;"><span data-lang="en">Highest Rated TV</span><span data-lang="ru">Лучший рейтинг ТВ</span></span>
           </div>
         </div>
       </div>
@@ -819,113 +1091,113 @@
 <!-- ═══════════════════════════════════════════════════════════════
      TRIVIA SECTION
 ═══════════════════════════════════════════════════════════════ -->
-<section id="trivia" class="relative py-24 bg-bb-dark overflow-hidden">
+<section id="trivia" class="relative py-24 overflow-hidden" style="background:#1a1208;">
   <div class="max-w-7xl mx-auto px-4 md:px-8 relative z-10">
 
     <div class="text-center mb-16 reveal">
       <div class="flex items-center justify-center gap-4 mb-4">
-        <div class="h-px w-16 bg-gradient-to-r from-transparent to-bb-green opacity-60"></div>
-        <span class="font-mono text-xs tracking-[0.3em] text-bb-green uppercase">Classified Intel</span>
-        <div class="h-px w-16 bg-gradient-to-l from-transparent to-bb-green opacity-60"></div>
+        <div style="height:1px;width:64px;background:linear-gradient(90deg,transparent,#a88a2a);opacity:0.7;"></div>
+        <span class="font-mono text-xs uppercase" style="color:#8a7355;letter-spacing:0.3em;"><span data-lang="en">Classified Intel</span><span data-lang="ru">Секретные данные</span></span>
+        <div style="height:1px;width:64px;background:linear-gradient(270deg,transparent,#a88a2a);opacity:0.7;"></div>
       </div>
-      <h2 class="font-display text-6xl md:text-7xl tracking-wider mb-4">FACTS &amp; TRIVIA</h2>
-      <p class="text-bb-muted font-mono text-sm tracking-wider max-w-xl mx-auto">Click each card to reveal the answer.</p>
+      <h2 class="font-display text-6xl md:text-7xl tracking-wider mb-4" style="color:#d4bc8a;"><span data-lang="en">FACTS &amp; TRIVIA</span><span data-lang="ru">ФАКТЫ И ВИКТОРИНА</span></h2>
+      <p class="font-mono text-sm tracking-wider max-w-xl mx-auto" style="color:#7a6545;"><span data-lang="en">Click each card to reveal the answer.</span><span data-lang="ru">Нажмите на карточку, чтобы узнать ответ.</span></p>
     </div>
 
     <div class="grid sm:grid-cols-2 lg:grid-cols-3 gap-6 reveal">
 
       <div class="trivia-card h-52" role="button" tabindex="0" aria-label="Trivia card: click to flip">
         <div class="trivia-inner">
-          <div class="trivia-front glass border border-bb-green/20">
-            <div class="periodic-badge text-bb-green border-bb-green mb-3" style="padding:4px 12px;">
+          <div class="trivia-front" style="background:#1f1a0f;border:1px solid #2e2416;border-top:2px solid #a88a2a;">
+            <div class="periodic-badge mb-3" style="color:#e8c547;border-color:#a88a2a;padding:4px 12px">
               <span class="atomic-num">Q</span><span class="symbol" style="font-size:2rem;">01</span><span class="element-name">Question</span>
             </div>
-            <p class="font-mono text-sm text-gray-300 leading-relaxed">What was Walter White's original salary as a chemistry teacher?</p>
-            <p class="font-mono text-xs text-bb-green mt-4 opacity-60">[ tap to reveal ]</p>
+            <p class="font-mono text-sm leading-relaxed" style="color:#8a7355;"><span data-lang="en">What was Walter White's original salary as a chemistry teacher?</span><span data-lang="ru">Какова была первоначальная зарплата Уолтера Уайта как учителя химии?</span></p>
+            <p class="font-mono text-xs mt-4" style="color:#a88a2a;opacity:0.7;"><span data-lang="en">[ tap to reveal ]</span><span data-lang="ru">[ нажмите ]</span></p>
           </div>
-          <div class="trivia-back glass-green border border-bb-green/30">
-            <div class="neon-green font-display text-4xl mb-3">$43,700</div>
-            <p class="font-mono text-xs text-gray-400 leading-relaxed">Walter White earned $43,700/year as a chemistry teacher at J.P. Wynne High School — a salary that drove his desperation.</p>
+          <div class="trivia-back" style="background:#1a1208;border:1px solid #a88a2a;border-top:3px solid #e8c547;">
+            <div class="font-display text-4xl mb-3" style="color:#e8c547;">$43,700</div>
+            <p class="font-mono text-xs leading-relaxed" style="color:#7a6545;"><span data-lang="en">Walter White earned $43,700/year as a chemistry teacher at J.P. Wynne High School — a salary that drove his desperation.</span><span data-lang="ru">Уолтер Уайт зарабатывал $43 700 в год учителем химии в школе Дж. П. Уинна — зарплата, которая и толкнула его в отчаяние.</span></p>
           </div>
         </div>
       </div>
 
       <div class="trivia-card h-52" role="button" tabindex="0" aria-label="Trivia card: click to flip">
         <div class="trivia-inner">
-          <div class="trivia-front glass border border-bb-amber/20">
-            <div class="periodic-badge text-bb-amber border-bb-amber mb-3" style="padding:4px 12px;">
+          <div class="trivia-front" style="background:#1f1a0f;border:1px solid #2e2416;border-top:2px solid #8a7355;">
+            <div class="periodic-badge mb-3" style="color:#c8a96e;border-color:#8a7355;padding:4px 12px">
               <span class="atomic-num">Q</span><span class="symbol" style="font-size:2rem;">02</span><span class="element-name">Question</span>
             </div>
-            <p class="font-mono text-sm text-gray-300 leading-relaxed">What color is Heisenberg's signature product, and why?</p>
-            <p class="font-mono text-xs text-bb-amber mt-4 opacity-60">[ tap to reveal ]</p>
+            <p class="font-mono text-sm leading-relaxed" style="color:#8a7355;"><span data-lang="en">What color is Heisenberg's signature product, and why?</span><span data-lang="ru">Какого цвета фирменный продукт Хайзенберга и почему?</span></p>
+            <p class="font-mono text-xs mt-4" style="color:#8a7355;opacity:0.7;"><span data-lang="en">[ tap to reveal ]</span><span data-lang="ru">[ нажмите ]</span></p>
           </div>
-          <div class="trivia-back glass border border-bb-amber/30" style="background:rgba(255,179,0,0.05);">
-            <div class="neon-amber font-display text-3xl mb-3">BLUE SKY</div>
-            <p class="font-mono text-xs text-gray-400 leading-relaxed">The blue color results from the unique synthesis method. It was a creative choice by Vince Gilligan to make it visually iconic and instantly recognizable.</p>
+          <div class="trivia-back" style="background:#1a1208;border:1px solid #8a7355;border-top:3px solid #c8a96e;">
+            <div class="font-display text-3xl mb-3" style="color:#c8a96e;">BLUE SKY</div>
+            <p class="font-mono text-xs leading-relaxed" style="color:#7a6545;"><span data-lang="en">The blue color results from the unique synthesis method. It was a creative choice by Vince Gilligan to make it visually iconic and instantly recognizable.</span><span data-lang="ru">Синий цвет — результат уникального метода синтеза. Это творческое решение Винса Гиллигана, чтобы сделать продукт визуально узнаваемым.</span></p>
           </div>
         </div>
       </div>
 
       <div class="trivia-card h-52" role="button" tabindex="0" aria-label="Trivia card: click to flip">
         <div class="trivia-inner">
-          <div class="trivia-front glass border border-bb-cyan/20">
-            <div class="periodic-badge text-bb-cyan border-bb-cyan mb-3" style="padding:4px 12px;">
+          <div class="trivia-front" style="background:#1f1a0f;border:1px solid #2e2416;border-top:2px solid #5c3d1e;">
+            <div class="periodic-badge mb-3" style="color:#d4bc8a;border-color:#5c3d1e;padding:4px 12px">
               <span class="atomic-num">Q</span><span class="symbol" style="font-size:2rem;">03</span><span class="element-name">Question</span>
             </div>
-            <p class="font-mono text-sm text-gray-300 leading-relaxed">Which episode holds a perfect 10.0 rating on IMDb — the highest ever for any TV episode?</p>
-            <p class="font-mono text-xs text-bb-cyan mt-4 opacity-60">[ tap to reveal ]</p>
+            <p class="font-mono text-sm leading-relaxed" style="color:#8a7355;"><span data-lang="en">Which episode holds a perfect 10.0 rating on IMDb — the highest ever for any TV episode?</span><span data-lang="ru">Какой эпизод имеет идеальный рейтинг 10.0 на IMDb — самый высокий в истории телевидения?</span></p>
+            <p class="font-mono text-xs mt-4" style="color:#7a6545;opacity:0.7;"><span data-lang="en">[ tap to reveal ]</span><span data-lang="ru">[ нажмите ]</span></p>
           </div>
-          <div class="trivia-back glass border border-bb-cyan/30" style="background:rgba(0,229,255,0.05);">
-            <div class="neon-cyan font-display text-3xl mb-3">OZYMANDIAS</div>
-            <p class="font-mono text-xs text-gray-400 leading-relaxed">S05E14 "Ozymandias" holds a 10.0/10 on IMDb — the highest-rated episode in television history. Directed by Rian Johnson.</p>
+          <div class="trivia-back" style="background:#1a1208;border:1px solid #5c3d1e;border-top:3px solid #d4bc8a;">
+            <div class="font-display text-3xl mb-3" style="color:#d4bc8a;"><span data-lang="en">OZYMANDIAS</span><span data-lang="ru">ОЗИМАНДИЯ</span></div>
+            <p class="font-mono text-xs leading-relaxed" style="color:#7a6545;"><span data-lang="en">S05E14 "Ozymandias" holds a 10.0/10 on IMDb — the highest-rated episode in television history. Directed by Rian Johnson.</span><span data-lang="ru">S05E14 «Озимандия» имеет рейтинг 10.0/10 на IMDb — самый высокий в истории телевидения. Режиссёр — Райан Джонсон.</span></p>
           </div>
         </div>
       </div>
 
       <div class="trivia-card h-52" role="button" tabindex="0" aria-label="Trivia card: click to flip">
         <div class="trivia-inner">
-          <div class="trivia-front glass border border-white/10">
-            <div class="periodic-badge text-gray-400 border-gray-600 mb-3" style="padding:4px 12px;">
+          <div class="trivia-front" style="background:#1f1a0f;border:1px solid #2e2416;">
+            <div class="periodic-badge mb-3" style="color:#7a6545;border-color:#2e2416;padding:4px 12px">
               <span class="atomic-num">Q</span><span class="symbol" style="font-size:2rem;">04</span><span class="element-name">Question</span>
             </div>
-            <p class="font-mono text-sm text-gray-300 leading-relaxed">What does "Breaking Bad" mean as a Southern American idiom?</p>
-            <p class="font-mono text-xs text-gray-500 mt-4 opacity-60">[ tap to reveal ]</p>
+            <p class="font-mono text-sm leading-relaxed" style="color:#8a7355;"><span data-lang="en">What does "Breaking Bad" mean as a Southern American idiom?</span><span data-lang="ru">Что означает «Breaking Bad» как южноамериканский идиом?</span></p>
+            <p class="font-mono text-xs mt-4" style="color:#7a6545;opacity:0.7;"><span data-lang="en">[ tap to reveal ]</span><span data-lang="ru">[ нажмите ]</span></p>
           </div>
-          <div class="trivia-back glass border border-white/15">
-            <div class="text-white font-display text-2xl mb-3">TO RAISE HELL</div>
-            <p class="font-mono text-xs text-gray-400 leading-relaxed">"Breaking bad" is a Southern US expression meaning to go wrong, raise hell, or embark on a destructive path — perfectly capturing Walter's arc.</p>
+          <div class="trivia-back" style="background:#1a1208;border:1px solid #2e2416;">
+            <div class="font-display text-2xl mb-3" style="color:#d4bc8a;">TO RAISE HELL</div>
+            <p class="font-mono text-xs leading-relaxed" style="color:#7a6545;"><span data-lang="en">"Breaking bad" is a Southern US expression meaning to go wrong, raise hell, or embark on a destructive path — perfectly capturing Walter's arc.</span><span data-lang="ru">«Breaking bad» — южноамериканское выражение, означающее «пойти по кривой дорожке» или «устроить хаос» — идеально отражает путь Уолтера.</span></p>
           </div>
         </div>
       </div>
 
       <div class="trivia-card h-52" role="button" tabindex="0" aria-label="Trivia card: click to flip">
         <div class="trivia-inner">
-          <div class="trivia-front glass border border-bb-green/20">
-            <div class="periodic-badge text-bb-green border-bb-green mb-3" style="padding:4px 12px;">
+          <div class="trivia-front" style="background:#1f1a0f;border:1px solid #2e2416;border-top:2px solid #a88a2a;">
+            <div class="periodic-badge mb-3" style="color:#e8c547;border-color:#a88a2a;padding:4px 12px">
               <span class="atomic-num">Q</span><span class="symbol" style="font-size:2rem;">05</span><span class="element-name">Question</span>
             </div>
-            <p class="font-mono text-sm text-gray-300 leading-relaxed">How many Emmy Awards did Breaking Bad win in total?</p>
-            <p class="font-mono text-xs text-bb-green mt-4 opacity-60">[ tap to reveal ]</p>
+            <p class="font-mono text-sm leading-relaxed" style="color:#8a7355;"><span data-lang="en">How many Emmy Awards did Breaking Bad win in total?</span><span data-lang="ru">Сколько премий Эмми получил «Во все тяжкие» в общей сложности?</span></p>
+            <p class="font-mono text-xs mt-4" style="color:#a88a2a;opacity:0.7;"><span data-lang="en">[ tap to reveal ]</span><span data-lang="ru">[ нажмите ]</span></p>
           </div>
-          <div class="trivia-back glass-green border border-bb-green/30">
-            <div class="neon-green font-display text-5xl mb-3">16</div>
-            <p class="font-mono text-xs text-gray-400 leading-relaxed">Breaking Bad won 16 Primetime Emmy Awards, including Outstanding Drama Series in its final two seasons (2013 and 2014).</p>
+          <div class="trivia-back" style="background:#1a1208;border:1px solid #a88a2a;border-top:3px solid #e8c547;">
+            <div class="font-display text-5xl mb-3" style="color:#e8c547;">16</div>
+            <p class="font-mono text-xs leading-relaxed" style="color:#7a6545;"><span data-lang="en">Breaking Bad won 16 Primetime Emmy Awards, including Outstanding Drama Series in its final two seasons (2013 and 2014).</span><span data-lang="ru">«Во все тяжкие» получил 16 премий Primetime Emmy, включая «Лучшую драматическую серию» в последних двух сезонах (2013 и 2014).</span></p>
           </div>
         </div>
       </div>
 
       <div class="trivia-card h-52" role="button" tabindex="0" aria-label="Trivia card: click to flip">
         <div class="trivia-inner">
-          <div class="trivia-front glass border border-bb-amber/20">
-            <div class="periodic-badge text-bb-amber border-bb-amber mb-3" style="padding:4px 12px;">
+          <div class="trivia-front" style="background:#1f1a0f;border:1px solid #2e2416;border-top:2px solid #8a7355;">
+            <div class="periodic-badge mb-3" style="color:#c8a96e;border-color:#8a7355;padding:4px 12px">
               <span class="atomic-num">Q</span><span class="symbol" style="font-size:2rem;">06</span><span class="element-name">Question</span>
             </div>
-            <p class="font-mono text-sm text-gray-300 leading-relaxed">What real chemistry consultant worked on the show to ensure scientific accuracy?</p>
-            <p class="font-mono text-xs text-bb-amber mt-4 opacity-60">[ tap to reveal ]</p>
+            <p class="font-mono text-sm leading-relaxed" style="color:#8a7355;"><span data-lang="en">What real chemistry consultant worked on the show to ensure scientific accuracy?</span><span data-lang="ru">Какой настоящий химик-консультант работал над сериалом для научной достоверности?</span></p>
+            <p class="font-mono text-xs mt-4" style="color:#8a7355;opacity:0.7;"><span data-lang="en">[ tap to reveal ]</span><span data-lang="ru">[ нажмите ]</span></p>
           </div>
-          <div class="trivia-back glass border border-bb-amber/30" style="background:rgba(255,179,0,0.05);">
-            <div class="neon-amber font-display text-2xl mb-3">Donna Nelson</div>
-            <p class="font-mono text-xs text-gray-400 leading-relaxed">University of Oklahoma chemistry professor Donna Nelson served as the show's science consultant, reviewing scripts for chemical accuracy.</p>
+          <div class="trivia-back" style="background:#1a1208;border:1px solid #8a7355;border-top:3px solid #c8a96e;">
+            <div class="font-display text-2xl mb-3" style="color:#c8a96e;">Donna Nelson</div>
+            <p class="font-mono text-xs leading-relaxed" style="color:#7a6545;"><span data-lang="en">University of Oklahoma chemistry professor Donna Nelson served as the show's science consultant, reviewing scripts for chemical accuracy.</span><span data-lang="ru">Профессор химии Университета Оклахомы Донна Нельсон была научным консультантом сериала и проверяла сценарии на химическую точность.</span></p>
           </div>
         </div>
       </div>
@@ -937,19 +1209,353 @@
 <div class="chem-divider"></div>
 
 <!-- ═══════════════════════════════════════════════════════════════
+     SOUNDTRACK / AUDIO
+═══════════════════════════════════════════════════════════════ -->
+<section id="soundtrack" class="relative py-16 overflow-hidden" style="background:#1a1208;">
+  <div class="max-w-5xl mx-auto px-4 md:px-8 relative z-10">
+
+    <div class="text-center mb-10 reveal">
+      <div class="flex items-center justify-center gap-4 mb-4">
+        <div style="height:1px;width:64px;background:linear-gradient(90deg,transparent,#a88a2a);opacity:0.7;"></div>
+        <span class="font-mono text-xs uppercase" style="color:#8a7355;letter-spacing:0.3em;">
+          <span data-lang="en">Soundtrack</span><span data-lang="ru">Саундтрек</span>
+        </span>
+        <div style="height:1px;width:64px;background:linear-gradient(270deg,transparent,#a88a2a);opacity:0.7;"></div>
+      </div>
+      <h2 class="font-display text-5xl md:text-6xl tracking-wider mb-3" style="color:#d4bc8a;">
+        <span data-lang="en">THE SOUND OF DANGER</span><span data-lang="ru">ЗВУК ОПАСНОСТИ</span>
+      </h2>
+      <p class="font-mono text-sm tracking-wider" style="color:#7a6545;">
+        <span data-lang="en">Original score by Dave Porter</span><span data-lang="ru">Оригинальный саундтрек Дэйва Портера</span>
+      </p>
+    </div>
+
+    <div class="reveal" style="border:1px solid #2e2416;background:#1f1a0f;padding:1.5rem;">
+      <!-- Hazard stripe top -->
+      <div style="height:4px;background:repeating-linear-gradient(-45deg,#e8c547 0px,#e8c547 8px,#0d0b08 8px,#0d0b08 16px);opacity:0.6;margin-bottom:1.25rem;"></div>
+
+      <div class="flex items-center gap-4 mb-4">
+        <div class="periodic-badge" style="color:#e8c547;border-color:#a88a2a;padding:4px 10px;">
+          <span class="atomic-num">♪</span>
+          <span class="symbol" style="font-size:1.4rem;">Au</span>
+          <span class="element-name">Audio</span>
+        </div>
+        <div>
+          <div class="font-display text-lg tracking-wider" style="color:#d4bc8a;">
+            <span data-lang="en">Breaking Bad Main Title Theme</span><span data-lang="ru">Главная тема «Во все тяжкие»</span>
+          </div>
+          <div class="font-mono text-xs mt-1" style="color:#7a6545;">Dave Porter · AMC Original Score · 2008</div>
+        </div>
+      </div>
+
+      <!-- Hidden native audio element -->
+      <audio id="bb-audio" preload="metadata" aria-label="Breaking Bad Main Title Theme by Dave Porter">
+        <source src="static/audio/bb_theme.mp3" type="audio/mpeg" />
+      </audio>
+
+      <!-- Custom styled player -->
+      <div id="bb-player" role="region" aria-label="Audio player" style="background:#111009;border:1px solid #2e2416;padding:1rem 1.25rem;">
+
+        <!-- Progress bar -->
+        <div id="bb-progress-wrap"
+             role="slider" aria-label="Seek" aria-valuemin="0" aria-valuemax="100" aria-valuenow="0" tabindex="0"
+             style="position:relative;height:4px;background:#2e2416;cursor:pointer;margin-bottom:1rem;"
+             onclick="bbSeek(event)" onkeydown="bbSeekKey(event)">
+          <!-- Played -->
+          <div id="bb-progress-bar" style="height:100%;width:0%;background:linear-gradient(90deg,#e8c547,#c97d20);transition:width 0.1s linear;pointer-events:none;"></div>
+          <!-- Thumb -->
+          <div id="bb-thumb" style="position:absolute;top:50%;right:auto;left:0%;transform:translate(-50%,-50%);width:12px;height:12px;background:#e8c547;border:2px solid #0d0b08;border-radius:50%;pointer-events:none;transition:left 0.1s linear;"></div>
+        </div>
+
+        <!-- Controls row -->
+        <div style="display:flex;align-items:center;gap:1rem;">
+
+          <!-- Play / Pause button -->
+          <button id="bb-play-btn"
+                  onclick="bbTogglePlay()"
+                  aria-label="Play"
+                  style="width:40px;height:40px;flex-shrink:0;display:flex;align-items:center;justify-content:center;background:#1f1a0f;border:1px solid #a88a2a;cursor:pointer;transition:background 0.2s,border-color 0.2s;"
+                  onmouseover="this.style.background='#2e2416'" onmouseout="this.style.background='#1f1a0f'">
+            <!-- Play icon -->
+            <svg id="bb-icon-play" class="w-4 h-4" fill="#e8c547" viewBox="0 0 24 24" aria-hidden="true"><path d="M8 5v14l11-7z"/></svg>
+            <!-- Pause icon (hidden) -->
+            <svg id="bb-icon-pause" class="w-4 h-4" fill="#e8c547" viewBox="0 0 24 24" aria-hidden="true" style="display:none;"><path d="M6 19h4V5H6v14zm8-14v14h4V5h-4z"/></svg>
+          </button>
+
+          <!-- Time display -->
+          <span id="bb-time" class="font-mono" style="font-size:0.7rem;color:#7a6545;letter-spacing:0.1em;min-width:80px;">0:00 / 0:00</span>
+
+          <!-- Track name (fills space) -->
+          <span class="font-mono" style="font-size:0.65rem;color:#5c3d1e;letter-spacing:0.12em;text-transform:uppercase;flex:1;overflow:hidden;white-space:nowrap;text-overflow:ellipsis;">
+            <span data-lang="en">Main Title Theme</span><span data-lang="ru">Главная тема</span>
+            &nbsp;·&nbsp; Dave Porter
+          </span>
+
+          <!-- Volume icon + slider -->
+          <div style="display:flex;align-items:center;gap:0.5rem;">
+            <button onclick="bbToggleMute()" aria-label="Mute"
+                    style="background:none;border:none;cursor:pointer;padding:0;display:flex;align-items:center;">
+              <svg id="bb-vol-icon" class="w-4 h-4" fill="#7a6545" viewBox="0 0 24 24" aria-hidden="true">
+                <path d="M3 9v6h4l5 5V4L7 9H3zm13.5 3c0-1.77-1.02-3.29-2.5-4.03v8.05c1.48-.73 2.5-2.25 2.5-4.02z"/>
+              </svg>
+            </button>
+            <div id="bb-vol-wrap"
+                 role="slider" aria-label="Volume" aria-valuemin="0" aria-valuemax="100" aria-valuenow="100" tabindex="0"
+                 style="position:relative;width:64px;height:3px;background:#2e2416;cursor:pointer;"
+                 onclick="bbSetVolume(event)">
+              <div id="bb-vol-bar" style="height:100%;width:100%;background:#a88a2a;pointer-events:none;"></div>
+            </div>
+          </div>
+
+        </div>
+      </div>
+
+      <!-- Hazard stripe bottom -->
+      <div style="height:4px;background:repeating-linear-gradient(-45deg,#e8c547 0px,#e8c547 8px,#0d0b08 8px,#0d0b08 16px);opacity:0.6;margin-top:1.25rem;"></div>
+    </div>
+
+  </div>
+</section>
+
+<div class="chem-divider"></div>
+
+<!-- ═══════════════════════════════════════════════════════════════
+     ORDERED LIST — TOP EPISODES
+═══════════════════════════════════════════════════════════════ -->
+<section id="top-episodes" class="relative py-20 overflow-hidden" style="background:#111009;">
+  <div class="max-w-5xl mx-auto px-4 md:px-8 relative z-10">
+
+    <div class="text-center mb-12 reveal">
+      <div class="flex items-center justify-center gap-4 mb-4">
+        <div style="height:1px;width:64px;background:linear-gradient(90deg,transparent,#a88a2a);opacity:0.7;"></div>
+        <span class="font-mono text-xs uppercase" style="color:#8a7355;letter-spacing:0.3em;">
+          <span data-lang="en">Ranked</span><span data-lang="ru">Рейтинг</span>
+        </span>
+        <div style="height:1px;width:64px;background:linear-gradient(270deg,transparent,#a88a2a);opacity:0.7;"></div>
+      </div>
+      <h2 class="font-display text-5xl md:text-6xl tracking-wider mb-3" style="color:#d4bc8a;">
+        <span data-lang="en">TOP EPISODES</span><span data-lang="ru">ЛУЧШИЕ ЭПИЗОДЫ</span>
+      </h2>
+      <p class="font-mono text-sm tracking-wider" style="color:#7a6545;">
+        <span data-lang="en">Ranked by IMDb rating</span><span data-lang="ru">По рейтингу IMDb</span>
+      </p>
+    </div>
+
+    <div class="grid md:grid-cols-2 gap-8 reveal">
+
+      <!-- Ordered list -->
+      <div style="border:1px solid #2e2416;background:#1f1a0f;padding:1.5rem;">
+        <div style="height:3px;background:linear-gradient(90deg,#e8c547,transparent);margin-bottom:1.25rem;"></div>
+        <ol style="list-style:none;padding:0;margin:0;counter-reset:episode-counter;">
+          <li style="counter-increment:episode-counter;display:flex;align-items:center;gap:1rem;padding:0.75rem 0;border-bottom:1px solid #2e2416;">
+            <span class="font-display text-3xl" style="color:#e8c547;min-width:2.5rem;">01</span>
+            <div>
+              <div class="font-mono text-sm" style="color:#d4bc8a;">Ozymandias</div>
+              <div class="font-mono text-xs" style="color:#7a6545;">S05E14 · <span data-lang="en">Rating</span><span data-lang="ru">Рейтинг</span>: 10.0</div>
+            </div>
+          </li>
+          <li style="counter-increment:episode-counter;display:flex;align-items:center;gap:1rem;padding:0.75rem 0;border-bottom:1px solid #2e2416;">
+            <span class="font-display text-3xl" style="color:#c8a96e;min-width:2.5rem;">02</span>
+            <div>
+              <div class="font-mono text-sm" style="color:#d4bc8a;">Felina</div>
+              <div class="font-mono text-xs" style="color:#7a6545;">S05E16 · <span data-lang="en">Rating</span><span data-lang="ru">Рейтинг</span>: 9.9</div>
+            </div>
+          </li>
+          <li style="counter-increment:episode-counter;display:flex;align-items:center;gap:1rem;padding:0.75rem 0;border-bottom:1px solid #2e2416;">
+            <span class="font-display text-3xl" style="color:#d4bc8a;min-width:2.5rem;">03</span>
+            <div>
+              <div class="font-mono text-sm" style="color:#d4bc8a;">Face Off</div>
+              <div class="font-mono text-xs" style="color:#7a6545;">S04E13 · <span data-lang="en">Rating</span><span data-lang="ru">Рейтинг</span>: 9.9</div>
+            </div>
+          </li>
+          <li style="counter-increment:episode-counter;display:flex;align-items:center;gap:1rem;padding:0.75rem 0;border-bottom:1px solid #2e2416;">
+            <span class="font-display text-3xl" style="color:#8a7355;min-width:2.5rem;">04</span>
+            <div>
+              <div class="font-mono text-sm" style="color:#d4bc8a;">To'hajiilee</div>
+              <div class="font-mono text-xs" style="color:#7a6545;">S05E13 · <span data-lang="en">Rating</span><span data-lang="ru">Рейтинг</span>: 9.8</div>
+            </div>
+          </li>
+          <li style="counter-increment:episode-counter;display:flex;align-items:center;gap:1rem;padding:0.75rem 0;">
+            <span class="font-display text-3xl" style="color:#8a7355;min-width:2.5rem;">05</span>
+            <div>
+              <div class="font-mono text-sm" style="color:#d4bc8a;">Crawl Space</div>
+              <div class="font-mono text-xs" style="color:#7a6545;">S04E11 · <span data-lang="en">Rating</span><span data-lang="ru">Рейтинг</span>: 9.8</div>
+            </div>
+          </li>
+        </ol>
+      </div>
+
+      <!-- Definition list — chemistry glossary -->
+      <div style="border:1px solid #2e2416;background:#1f1a0f;padding:1.5rem;">
+        <div style="height:3px;background:linear-gradient(90deg,#c8a96e,transparent);margin-bottom:1.25rem;"></div>
+        <div class="font-mono text-xs uppercase mb-4" style="color:#c8a96e;letter-spacing:0.2em;">
+          <span data-lang="en">Chemistry Glossary</span><span data-lang="ru">Химический глоссарий</span>
+        </div>
+        <dl style="margin:0;padding:0;">
+          <dt class="font-display text-lg tracking-wider" style="color:#e8c547;">Methylamine</dt>
+          <dd class="font-mono text-xs leading-relaxed mb-4" style="color:#7a6545;margin-left:1rem;border-left:2px solid #2e2416;padding-left:0.75rem;">
+            <span data-lang="en">CH₃NH₂ — key precursor chemical used in the P2P synthesis method. Stolen in bulk from a freight train in Season 5.</span>
+            <span data-lang="ru">CH₃NH₂ — ключевое прекурсорное вещество метода синтеза P2P. Похищено в больших объёмах из товарного поезда в 5 сезоне.</span>
+          </dd>
+          <dt class="font-display text-lg tracking-wider" style="color:#c8a96e;">Heisenberg</dt>
+          <dd class="font-mono text-xs leading-relaxed mb-4" style="color:#7a6545;margin-left:1rem;border-left:2px solid #2e2416;padding-left:0.75rem;">
+            <span data-lang="en">Walter White's criminal alias, named after physicist Werner Heisenberg — the uncertainty principle as a metaphor for his double life.</span>
+            <span data-lang="ru">Криминальный псевдоним Уолтера Уайта, названный в честь физика Вернера Гейзенберга — принцип неопределённости как метафора двойной жизни.</span>
+          </dd>
+          <dt class="font-display text-lg tracking-wider" style="color:#d4bc8a;">Blue Sky</dt>
+          <dd class="font-mono text-xs leading-relaxed" style="color:#7a6545;margin-left:1rem;border-left:2px solid #2e2416;padding-left:0.75rem;">
+            <span data-lang="en">Street name for Heisenberg's product. 99.1% pure methamphetamine with a distinctive blue colour from the unique synthesis process.</span>
+            <span data-lang="ru">Уличное название продукта Хайзенберга. Метамфетамин чистотой 99.1% с характерным синим цветом, полученным в результате уникального синтеза.</span>
+          </dd>
+        </dl>
+      </div>
+
+    </div>
+  </div>
+</section>
+
+<div class="chem-divider"></div>
+
+<!-- ═══════════════════════════════════════════════════════════════
+     TABLE — SEASONS STATS WITH COLSPAN / ROWSPAN
+═══════════════════════════════════════════════════════════════ -->
+<section id="stats-table" class="relative py-20 overflow-hidden" style="background:#1a1208;">
+  <div class="max-w-5xl mx-auto px-4 md:px-8 relative z-10">
+
+    <div class="text-center mb-12 reveal">
+      <div class="flex items-center justify-center gap-4 mb-4">
+        <div style="height:1px;width:64px;background:linear-gradient(90deg,transparent,#a88a2a);opacity:0.7;"></div>
+        <span class="font-mono text-xs uppercase" style="color:#8a7355;letter-spacing:0.3em;">
+          <span data-lang="en">Data Analysis</span><span data-lang="ru">Анализ данных</span>
+        </span>
+        <div style="height:1px;width:64px;background:linear-gradient(270deg,transparent,#a88a2a);opacity:0.7;"></div>
+      </div>
+      <h2 class="font-display text-5xl md:text-6xl tracking-wider mb-3" style="color:#d4bc8a;">
+        <span data-lang="en">SEASONS BREAKDOWN</span><span data-lang="ru">СТАТИСТИКА СЕЗОНОВ</span>
+      </h2>
+    </div>
+
+    <div class="reveal overflow-x-auto">
+      <!-- Hazard stripe top -->
+      <div style="height:4px;background:repeating-linear-gradient(-45deg,#e8c547 0px,#e8c547 8px,#0d0b08 8px,#0d0b08 16px);opacity:0.6;"></div>
+
+      <table style="width:100%;border-collapse:collapse;background:#1f1a0f;font-family:'Share Tech Mono',monospace;">
+        <thead>
+          <tr style="background:#111009;">
+            <!-- rowspan: Season header spans 2 rows -->
+            <th rowspan="2" style="border:1px solid #2e2416;padding:0.75rem 1rem;color:#e8c547;text-align:left;font-size:0.7rem;letter-spacing:0.15em;text-transform:uppercase;vertical-align:middle;">
+              <span data-lang="en">Season</span><span data-lang="ru">Сезон</span>
+            </th>
+            <th rowspan="2" style="border:1px solid #2e2416;padding:0.75rem 1rem;color:#e8c547;text-align:center;font-size:0.7rem;letter-spacing:0.15em;text-transform:uppercase;vertical-align:middle;">
+              <span data-lang="en">Episodes</span><span data-lang="ru">Эпизоды</span>
+            </th>
+            <!-- colspan: "Ratings" spans 2 columns -->
+            <th colspan="2" style="border:1px solid #2e2416;padding:0.75rem 1rem;color:#c8a96e;text-align:center;font-size:0.7rem;letter-spacing:0.15em;text-transform:uppercase;">
+              <span data-lang="en">Ratings</span><span data-lang="ru">Рейтинги</span>
+            </th>
+            <th rowspan="2" style="border:1px solid #2e2416;padding:0.75rem 1rem;color:#e8c547;text-align:center;font-size:0.7rem;letter-spacing:0.15em;text-transform:uppercase;vertical-align:middle;">
+              <span data-lang="en">Year</span><span data-lang="ru">Год</span>
+            </th>
+          </tr>
+          <tr style="background:#111009;">
+            <th style="border:1px solid #2e2416;padding:0.5rem 1rem;color:#8a7355;text-align:center;font-size:0.65rem;letter-spacing:0.1em;text-transform:uppercase;">IMDb</th>
+            <th style="border:1px solid #2e2416;padding:0.5rem 1rem;color:#8a7355;text-align:center;font-size:0.65rem;letter-spacing:0.1em;text-transform:uppercase;">RT%</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr style="transition:background 0.2s;" onmouseover="this.style.background='#252010'" onmouseout="this.style.background='transparent'">
+            <td style="border:1px solid #2e2416;padding:0.75rem 1rem;color:#d4bc8a;font-size:0.8rem;">
+              <span data-lang="en">Season 1 — Mr. Chips</span><span data-lang="ru">Сезон 1 — Мистер Чипс</span>
+            </td>
+            <td style="border:1px solid #2e2416;padding:0.75rem 1rem;color:#c8a96e;text-align:center;font-size:0.85rem;">7</td>
+            <td style="border:1px solid #2e2416;padding:0.75rem 1rem;color:#e8c547;text-align:center;font-size:0.85rem;">8.9</td>
+            <td style="border:1px solid #2e2416;padding:0.75rem 1rem;color:#c8a96e;text-align:center;font-size:0.85rem;">86%</td>
+            <td style="border:1px solid #2e2416;padding:0.75rem 1rem;color:#8a7355;text-align:center;font-size:0.8rem;">2008</td>
+          </tr>
+          <tr style="transition:background 0.2s;" onmouseover="this.style.background='#252010'" onmouseout="this.style.background='transparent'">
+            <td style="border:1px solid #2e2416;padding:0.75rem 1rem;color:#d4bc8a;font-size:0.8rem;">
+              <span data-lang="en">Season 2 — The Descent</span><span data-lang="ru">Сезон 2 — Падение</span>
+            </td>
+            <td style="border:1px solid #2e2416;padding:0.75rem 1rem;color:#c8a96e;text-align:center;font-size:0.85rem;">13</td>
+            <td style="border:1px solid #2e2416;padding:0.75rem 1rem;color:#e8c547;text-align:center;font-size:0.85rem;">9.0</td>
+            <td style="border:1px solid #2e2416;padding:0.75rem 1rem;color:#c8a96e;text-align:center;font-size:0.85rem;">97%</td>
+            <td style="border:1px solid #2e2416;padding:0.75rem 1rem;color:#8a7355;text-align:center;font-size:0.8rem;">2009</td>
+          </tr>
+          <tr style="transition:background 0.2s;" onmouseover="this.style.background='#252010'" onmouseout="this.style.background='transparent'">
+            <td style="border:1px solid #2e2416;padding:0.75rem 1rem;color:#d4bc8a;font-size:0.8rem;">
+              <span data-lang="en">Season 3 — The Empire</span><span data-lang="ru">Сезон 3 — Империя</span>
+            </td>
+            <td style="border:1px solid #2e2416;padding:0.75rem 1rem;color:#c8a96e;text-align:center;font-size:0.85rem;">13</td>
+            <td style="border:1px solid #2e2416;padding:0.75rem 1rem;color:#e8c547;text-align:center;font-size:0.85rem;">9.2</td>
+            <td style="border:1px solid #2e2416;padding:0.75rem 1rem;color:#c8a96e;text-align:center;font-size:0.85rem;">100%</td>
+            <td style="border:1px solid #2e2416;padding:0.75rem 1rem;color:#8a7355;text-align:center;font-size:0.8rem;">2010</td>
+          </tr>
+          <tr style="transition:background 0.2s;" onmouseover="this.style.background='#252010'" onmouseout="this.style.background='transparent'">
+            <td style="border:1px solid #2e2416;padding:0.75rem 1rem;color:#d4bc8a;font-size:0.8rem;">
+              <span data-lang="en">Season 4 — Heisenberg</span><span data-lang="ru">Сезон 4 — Хайзенберг</span>
+            </td>
+            <td style="border:1px solid #2e2416;padding:0.75rem 1rem;color:#c8a96e;text-align:center;font-size:0.85rem;">13</td>
+            <td style="border:1px solid #2e2416;padding:0.75rem 1rem;color:#e8c547;text-align:center;font-size:0.85rem;">9.5</td>
+            <td style="border:1px solid #2e2416;padding:0.75rem 1rem;color:#c8a96e;text-align:center;font-size:0.85rem;">100%</td>
+            <td style="border:1px solid #2e2416;padding:0.75rem 1rem;color:#8a7355;text-align:center;font-size:0.8rem;">2011</td>
+          </tr>
+          <tr style="transition:background 0.2s;" onmouseover="this.style.background='#252010'" onmouseout="this.style.background='transparent'">
+            <td style="border:1px solid #2e2416;padding:0.75rem 1rem;color:#d4bc8a;font-size:0.8rem;">
+              <span data-lang="en">Season 5 — Endgame</span><span data-lang="ru">Сезон 5 — Финал</span>
+            </td>
+            <td style="border:1px solid #2e2416;padding:0.75rem 1rem;color:#c8a96e;text-align:center;font-size:0.85rem;">16</td>
+            <td style="border:1px solid #2e2416;padding:0.75rem 1rem;color:#e8c547;text-align:center;font-size:0.85rem;">9.7</td>
+            <td style="border:1px solid #2e2416;padding:0.75rem 1rem;color:#c8a96e;text-align:center;font-size:0.85rem;">100%</td>
+            <td style="border:1px solid #2e2416;padding:0.75rem 1rem;color:#8a7355;text-align:center;font-size:0.8rem;">2012–13</td>
+          </tr>
+          <!-- Total row with colspan -->
+          <tr style="background:#111009;">
+            <td colspan="2" style="border:1px solid #2e2416;padding:0.75rem 1rem;color:#e8c547;font-size:0.75rem;letter-spacing:0.1em;text-transform:uppercase;">
+              <span data-lang="en">Total / Series Average</span><span data-lang="ru">Итого / Средний рейтинг</span>
+            </td>
+            <td style="border:1px solid #2e2416;padding:0.75rem 1rem;color:#e8c547;text-align:center;font-size:0.9rem;font-family:'Bebas Neue',sans-serif;letter-spacing:0.1em;">9.5</td>
+            <td style="border:1px solid #2e2416;padding:0.75rem 1rem;color:#c8a96e;text-align:center;font-size:0.9rem;font-family:'Bebas Neue',sans-serif;letter-spacing:0.1em;">96%</td>
+            <td style="border:1px solid #2e2416;padding:0.75rem 1rem;color:#8a7355;text-align:center;font-size:0.75rem;">62 <span data-lang="en">ep.</span><span data-lang="ru">эп.</span></td>
+          </tr>
+        </tbody>
+      </table>
+
+      <!-- Hazard stripe bottom -->
+      <div style="height:4px;background:repeating-linear-gradient(-45deg,#e8c547 0px,#e8c547 8px,#0d0b08 8px,#0d0b08 16px);opacity:0.6;"></div>
+    </div>
+
+  </div>
+</section>
+
+<div class="chem-divider"></div>
+
+
+<!-- ═══════════════════════════════════════════════════════════════
      QUOTE BANNER
 ═══════════════════════════════════════════════════════════════ -->
-<section class="relative py-20 overflow-hidden" style="background:linear-gradient(135deg,#050505 0%,#0d1a0d 50%,#050505 100%);">
+<section id="quote-banner" class="relative py-20 overflow-hidden" style="background:linear-gradient(135deg,#0d0b08 0%,#1a1208 50%,#0d0b08 100%);">
   <div class="absolute inset-0 pointer-events-none"
-       style="background:radial-gradient(ellipse 80% 60% at 50% 50%,rgba(57,255,20,0.06),transparent);"></div>
+       style="background:radial-gradient(ellipse 80% 60% at 50% 50%,rgba(200,169,110,0.04),transparent);"></div>
   <div class="max-w-4xl mx-auto px-4 md:px-8 text-center relative z-10 reveal">
-    <div class="font-mono text-xs tracking-[0.3em] text-bb-green uppercase mb-6 opacity-70">Walter White · Season 4</div>
+    <div class="font-mono text-xs uppercase mb-6 quote-who" style="color:#8a7355;letter-spacing:0.3em;opacity:0.8;transition:opacity 0.25s;"><span data-lang="en">Walter White · Season 4</span><span data-lang="ru">Уолтер Уайт · Сезон 4</span></div>
     <blockquote class="font-display text-4xl md:text-6xl lg:text-7xl tracking-wider leading-tight mb-8">
-      <span class="text-white">I AM THE ONE</span><br/>
-      <span class="neon-green">WHO KNOCKS</span>
+      <span style="color:#d4bc8a;"><span data-lang="en">I AM THE ONE</span><span data-lang="ru">Я ТОТ САМЫЙ</span></span><br/>
+      <span style="color:#e8c547;"><span data-lang="en">WHO KNOCKS</span><span data-lang="ru">КТО СТУЧИТСЯ</span></span>
     </blockquote>
-    <div class="w-24 h-px bg-gradient-to-r from-transparent via-bb-green to-transparent mx-auto mb-6"></div>
-    <p class="font-mono text-sm text-bb-muted tracking-wider">Season 4, Episode 6 — "Cornered"</p>
+    <div class="mx-auto mb-6" style="width:96px;height:1px;background:linear-gradient(90deg,transparent,#a88a2a,transparent);"></div>
+    <p class="font-mono text-sm tracking-wider mb-8 quote-episode" style="color:#7a6545;transition:opacity 0.25s;"><span data-lang="en">Season 4, Episode 6 — "Cornered"</span><span data-lang="ru">Сезон 4, Эпизод 6 — «В ловушке»</span></p>
+
+    <!-- Random Quote button -->
+    <button onclick="bbRandomQuote()"
+            class="btn-secondary font-mono text-xs tracking-widest uppercase cursor-pointer"
+            style="padding:0.75rem 2rem;display:inline-flex;align-items:center;gap:0.75rem;"
+            onmouseover="this.style.borderColor='#a88a2a';this.style.color='#e8c547'"
+            onmouseout="this.style.borderColor='';this.style.color=''">
+      <svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24" aria-hidden="true">
+        <path d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"/>
+      </svg>
+      <span data-lang="en">Random Quote</span><span data-lang="ru">Случайная цитата</span>
+    </button>
   </div>
 </section>
 
@@ -958,10 +1564,10 @@
 <!-- ═══════════════════════════════════════════════════════════════
      FOOTER
 ═══════════════════════════════════════════════════════════════ -->
-<footer class="relative bg-bb-black pt-20 pb-10 overflow-hidden">
-  <div class="absolute top-0 left-0 right-0 h-px bg-gradient-to-r from-transparent via-bb-green to-transparent opacity-30"></div>
+<footer class="relative pt-20 pb-10 overflow-hidden" style="background:#0d0b08;">
+  <div style="position:absolute;top:0;left:0;right:0;height:1px;background:linear-gradient(90deg,transparent,#a88a2a,transparent);opacity:0.5;"></div>
   <div class="absolute inset-0 pointer-events-none opacity-3"
-       style="background-image:linear-gradient(rgba(57,255,20,0.15) 1px,transparent 1px),linear-gradient(90deg,rgba(57,255,20,0.15) 1px,transparent 1px);background-size:40px 40px;"></div>
+       style="background-image:linear-gradient(rgba(200,169,110,0.04) 1px,transparent 1px),linear-gradient(90deg,rgba(200,169,110,0.04) 1px,transparent 1px);background-size:40px 40px;"></div>
 
   <div class="max-w-7xl mx-auto px-4 md:px-8 relative z-10">
     <div class="grid md:grid-cols-2 lg:grid-cols-4 gap-12 mb-16">
@@ -969,29 +1575,29 @@
       <!-- Brand -->
       <div class="lg:col-span-2">
         <div class="flex items-center gap-3 mb-6">
-          <div class="periodic-badge text-bb-green border-bb-green" style="padding:6px 14px;">
+          <div class="periodic-badge" style="color:#e8c547;border-color:#a88a2a;padding:6px 14px;">
             <span class="atomic-num">35</span><span class="symbol" style="font-size:2.5rem;">Br</span><span class="element-name">Bromine</span>
           </div>
-          <div class="periodic-badge text-bb-amber border-bb-amber" style="padding:6px 14px;">
+          <div class="periodic-badge" style="color:#c8a96e;border-color:#8a7355;padding:6px 14px;">
             <span class="atomic-num">56</span><span class="symbol" style="font-size:2.5rem;">Ba</span><span class="element-name">Barium</span>
           </div>
         </div>
-        <h3 class="font-display text-3xl tracking-wider mb-3">BREAKING BAD</h3>
-        <p class="text-bb-muted text-sm leading-relaxed max-w-sm font-mono">
+        <h3 class="font-display text-3xl tracking-wider mb-3" style="color:#d4bc8a;">BREAKING BAD</h3>
+        <p class="text-sm leading-relaxed max-w-sm font-mono" style="color:#7a6545;">
           A fan tribute to the greatest television drama ever made. Created by Vince Gilligan. Aired on AMC 2008–2013.
         </p>
         <div class="flex gap-4 mt-6">
-          <a href="#" class="w-10 h-10 glass rounded-sm flex items-center justify-center text-bb-muted hover:text-bb-green border border-white/10 hover:border-bb-green/40 transition-all duration-200 cursor-pointer" aria-label="Twitter">
+          <a href="https://x.com/BreakingBad_" target="_blank" rel="noopener noreferrer" class="w-10 h-10 flex items-center justify-center transition-all duration-200 cursor-pointer" style="background:#1f1a0f;border:1px solid #2e2416;color:#7a6545;" onmouseover="this.style.color='#e8c547';this.style.borderColor='#a88a2a'" onmouseout="this.style.color='#7a6545';this.style.borderColor='#2e2416'" aria-label="Twitter">
             <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 24 24" aria-hidden="true">
               <path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z"/>
             </svg>
           </a>
-          <a href="#" class="w-10 h-10 glass rounded-sm flex items-center justify-center text-bb-muted hover:text-bb-green border border-white/10 hover:border-bb-green/40 transition-all duration-200 cursor-pointer" aria-label="Reddit">
+          <a href="https://www.reddit.com/r/breakingbad/" target="_blank" rel="noopener noreferrer" class="w-10 h-10 flex items-center justify-center transition-all duration-200 cursor-pointer" style="background:#1f1a0f;border:1px solid #2e2416;color:#7a6545;" onmouseover="this.style.color='#e8c547';this.style.borderColor='#a88a2a'" onmouseout="this.style.color='#7a6545';this.style.borderColor='#2e2416'" aria-label="Reddit">
             <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 24 24" aria-hidden="true">
               <path d="M12 0A12 12 0 0 0 0 12a12 12 0 0 0 12 12 12 12 0 0 0 12-12A12 12 0 0 0 12 0zm5.01 4.744c.688 0 1.25.561 1.25 1.249a1.25 1.25 0 0 1-2.498.056l-2.597-.547-.8 3.747c1.824.07 3.48.632 4.674 1.488.308-.309.73-.491 1.207-.491.968 0 1.754.786 1.754 1.754 0 .716-.435 1.333-1.01 1.614a3.111 3.111 0 0 1 .042.52c0 2.694-3.13 4.87-7.004 4.87-3.874 0-7.004-2.176-7.004-4.87 0-.183.015-.366.043-.534A1.748 1.748 0 0 1 4.028 12c0-.968.786-1.754 1.754-1.754.463 0 .898.196 1.207.49 1.207-.883 2.878-1.43 4.744-1.487l.885-4.182a.342.342 0 0 1 .14-.197.35.35 0 0 1 .238-.042l2.906.617a1.214 1.214 0 0 1 1.108-.701zM9.25 12C8.561 12 8 12.562 8 13.25c0 .687.561 1.248 1.25 1.248.687 0 1.248-.561 1.248-1.249 0-.688-.561-1.249-1.249-1.249zm5.5 0c-.687 0-1.248.561-1.248 1.25 0 .687.561 1.248 1.249 1.248.688 0 1.249-.561 1.249-1.249 0-.687-.562-1.249-1.25-1.249zm-5.466 3.99a.327.327 0 0 0-.231.094.33.33 0 0 0 0 .463c.842.842 2.484.913 2.961.913.477 0 2.105-.056 2.961-.913a.361.361 0 0 0 .029-.463.33.33 0 0 0-.464 0c-.547.533-1.684.73-2.512.73-.828 0-1.979-.196-2.512-.73a.326.326 0 0 0-.232-.095z"/>
             </svg>
           </a>
-          <a href="#" class="w-10 h-10 glass rounded-sm flex items-center justify-center text-bb-muted hover:text-bb-green border border-white/10 hover:border-bb-green/40 transition-all duration-200 cursor-pointer" aria-label="YouTube">
+          <a href="https://www.youtube.com/results?search_query=breaking+bad+official" target="_blank" rel="noopener noreferrer" class="w-10 h-10 flex items-center justify-center transition-all duration-200 cursor-pointer" style="background:#1f1a0f;border:1px solid #2e2416;color:#7a6545;" onmouseover="this.style.color='#e8c547';this.style.borderColor='#a88a2a'" onmouseout="this.style.color='#7a6545';this.style.borderColor='#2e2416'" aria-label="YouTube">
             <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 24 24" aria-hidden="true">
               <path d="M23.498 6.186a3.016 3.016 0 0 0-2.122-2.136C19.505 3.545 12 3.545 12 3.545s-7.505 0-9.377.505A3.017 3.017 0 0 0 .502 6.186C0 8.07 0 12 0 12s0 3.93.502 5.814a3.016 3.016 0 0 0 2.122 2.136c1.871.505 9.376.505 9.376.505s7.505 0 9.377-.505a3.015 3.015 0 0 0 2.122-2.136C24 15.93 24 12 24 12s0-3.93-.502-5.814zM9.545 15.568V8.432L15.818 12l-6.273 3.568z"/>
             </svg>
@@ -1001,47 +1607,124 @@
 
       <!-- Navigation -->
       <div>
-        <h4 class="font-mono text-xs tracking-[0.3em] text-bb-green uppercase mb-6">Navigate</h4>
+        <h4 class="font-mono text-xs uppercase mb-6" style="color:#e8c547;letter-spacing:0.3em;"><span data-lang="en">Navigate</span><span data-lang="ru">Навигация</span></h4>
         <ul class="space-y-3">
-          <li><a href="#hero"       class="font-mono text-sm text-bb-muted hover:text-white transition-colors duration-200 cursor-pointer">Home</a></li>
-          <li><a href="#characters" class="font-mono text-sm text-bb-muted hover:text-white transition-colors duration-200 cursor-pointer">Characters</a></li>
-          <li><a href="#seasons"    class="font-mono text-sm text-bb-muted hover:text-white transition-colors duration-200 cursor-pointer">Seasons</a></li>
-          <li><a href="#gallery"    class="font-mono text-sm text-bb-muted hover:text-white transition-colors duration-200 cursor-pointer">Gallery</a></li>
-          <li><a href="#trivia"     class="font-mono text-sm text-bb-muted hover:text-white transition-colors duration-200 cursor-pointer">Trivia</a></li>
+          <li><a href="#hero"       class="font-mono text-sm transition-colors duration-200 cursor-pointer" style="color:#7a6545;" onmouseover="this.style.color='#d4bc8a'" onmouseout="this.style.color='#7a6545'"><span data-lang="en">Home</span><span data-lang="ru">Главная</span></a></li>
+          <li><a href="#characters" class="font-mono text-sm transition-colors duration-200 cursor-pointer" style="color:#7a6545;" onmouseover="this.style.color='#d4bc8a'" onmouseout="this.style.color='#7a6545'"><span data-lang="en">Characters</span><span data-lang="ru">Персонажи</span></a></li>
+          <li><a href="#seasons"    class="font-mono text-sm transition-colors duration-200 cursor-pointer" style="color:#7a6545;" onmouseover="this.style.color='#d4bc8a'" onmouseout="this.style.color='#7a6545'"><span data-lang="en">Seasons</span><span data-lang="ru">Сезоны</span></a></li>
+          <li><a href="#gallery"    class="font-mono text-sm transition-colors duration-200 cursor-pointer" style="color:#7a6545;" onmouseover="this.style.color='#d4bc8a'" onmouseout="this.style.color='#7a6545'"><span data-lang="en">Gallery</span><span data-lang="ru">Галерея</span></a></li>
+          <li><a href="#trivia"     class="font-mono text-sm transition-colors duration-200 cursor-pointer" style="color:#7a6545;" onmouseover="this.style.color='#d4bc8a'" onmouseout="this.style.color='#7a6545'"><span data-lang="en">Trivia</span><span data-lang="ru">Факты</span></a></li>
         </ul>
       </div>
 
       <!-- Universe -->
       <div>
-        <h4 class="font-mono text-xs tracking-[0.3em] text-bb-amber uppercase mb-6">Universe</h4>
+        <h4 class="font-mono text-xs uppercase mb-6" style="color:#c8a96e;letter-spacing:0.3em;"><span data-lang="en">Universe</span><span data-lang="ru">Вселенная</span></h4>
         <ul class="space-y-3">
-          <li><span class="font-mono text-sm text-bb-muted cursor-pointer hover:text-white transition-colors duration-200">Better Call Saul</span></li>
-          <li><span class="font-mono text-sm text-bb-muted cursor-pointer hover:text-white transition-colors duration-200">El Camino</span></li>
-          <li><span class="font-mono text-sm text-bb-muted cursor-pointer hover:text-white transition-colors duration-200">The Cartel</span></li>
-          <li><span class="font-mono text-sm text-bb-muted cursor-pointer hover:text-white transition-colors duration-200">Albuquerque</span></li>
-          <li><span class="font-mono text-sm text-bb-muted cursor-pointer hover:text-white transition-colors duration-200">Los Pollos Hermanos</span></li>
+          <li><a href="https://www.imdb.com/title/tt3032476/" target="_blank" rel="noopener noreferrer" class="font-mono text-sm transition-colors duration-200 cursor-pointer" style="color:#7a6545;" onmouseover="this.style.color='#d4bc8a'" onmouseout="this.style.color='#7a6545'">Better Call Saul</a></li>
+          <li><a href="https://www.imdb.com/title/tt9243946/" target="_blank" rel="noopener noreferrer" class="font-mono text-sm transition-colors duration-200 cursor-pointer" style="color:#7a6545;" onmouseover="this.style.color='#d4bc8a'" onmouseout="this.style.color='#7a6545'">El Camino</a></li>
+          <li><a href="https://www.imdb.com/title/tt0903747/" target="_blank" rel="noopener noreferrer" class="font-mono text-sm transition-colors duration-200 cursor-pointer" style="color:#7a6545;" onmouseover="this.style.color='#d4bc8a'" onmouseout="this.style.color='#7a6545'">Breaking Bad · IMDb</a></li>
+          <li><a href="https://en.wikipedia.org/wiki/Albuquerque,_New_Mexico" target="_blank" rel="noopener noreferrer" class="font-mono text-sm transition-colors duration-200 cursor-pointer" style="color:#7a6545;" onmouseover="this.style.color='#d4bc8a'" onmouseout="this.style.color='#7a6545'">Albuquerque, NM</a></li>
+          <li><a href="https://breakingbad.fandom.com/wiki/Los_Pollos_Hermanos" target="_blank" rel="noopener noreferrer" class="font-mono text-sm transition-colors duration-200 cursor-pointer" style="color:#7a6545;" onmouseover="this.style.color='#d4bc8a'" onmouseout="this.style.color='#7a6545'">Los Pollos Hermanos</a></li>
         </ul>
       </div>
 
     </div>
 
     <!-- Footer bottom -->
-    <div class="border-t border-white/5 pt-8 flex flex-col md:flex-row items-center justify-between gap-4">
-      <p class="font-mono text-xs text-bb-muted tracking-wider">
-        © 2024 Breaking Bad Fan Site · Not affiliated with AMC or Sony Pictures Television
+    <div class="pt-8 flex flex-col md:flex-row items-center justify-between gap-4" style="border-top:1px solid #2e2416;">
+      <p class="font-mono text-xs tracking-wider" style="color:#4a3820;">© 2024 Breaking Bad Fan Site · Not affiliated with AMC or Sony Pictures Television
       </p>
       <div class="flex items-center gap-6">
-        <span class="font-mono text-xs text-bb-muted">Created by Vince Gilligan</span>
+        <span class="font-mono text-xs" style="color:#4a3820;"><span data-lang="en">Created by Vince Gilligan</span><span data-lang="ru">Создан Винсом Гиллиганом</span></span>
         <div class="flex items-center gap-2">
-          <div class="w-2 h-2 rounded-full bg-bb-green glow-pulse"></div>
-          <span class="font-mono text-xs text-bb-green">99.1% Pure</span>
+          <div class="w-2 h-2 slow-pulse" style="background:#e8c547;"></div>
+          <span class="font-mono text-xs" style="color:#e8c547;">99.1% Pure</span>
         </div>
       </div>
     </div>
   </div>
 </footer>
 
+<!-- ── Scroll to top button ── -->
+<button id="scroll-top-btn"
+        onclick="window.scrollTo({top:0,behavior:'smooth'})"
+        aria-label="Scroll to top"
+        title="Back to top"
+        style="position:fixed;bottom:2rem;right:2rem;z-index:9100;width:44px;height:44px;display:none;align-items:center;justify-content:center;background:#1f1a0f;border:1px solid #a88a2a;cursor:pointer;transition:opacity 0.3s,transform 0.3s,background 0.2s;opacity:0;"
+        onmouseover="this.style.background='#2e2416';this.style.borderColor='#e8c547'"
+        onmouseout="this.style.background='#1f1a0f';this.style.borderColor='#a88a2a'">
+  <svg width="16" height="16" fill="none" stroke="#e8c547" stroke-width="2.5" viewBox="0 0 24 24" aria-hidden="true">
+    <path d="M18 15l-6-6-6 6"/>
+  </svg>
+</button>
+
+<!-- ── Lightbox modal ── -->
+<div id="lightbox"
+     role="dialog" aria-modal="true" aria-label="Image viewer"
+     style="display:none;position:fixed;inset:0;z-index:9200;background:rgba(8,6,3,0.96);align-items:center;justify-content:center;padding:1rem;"
+     onclick="bbLightboxClose(event)">
+
+  <!-- Hazard stripe top -->
+  <div style="position:absolute;top:0;left:0;right:0;height:4px;background:repeating-linear-gradient(-45deg,#e8c547 0px,#e8c547 8px,#0d0b08 8px,#0d0b08 16px);opacity:0.7;pointer-events:none;"></div>
+
+  <!-- Close button -->
+  <button onclick="bbLightboxClose()" aria-label="Close"
+          style="position:absolute;top:1.25rem;right:1.25rem;width:40px;height:40px;display:flex;align-items:center;justify-content:center;background:#1f1a0f;border:1px solid #2e2416;cursor:pointer;z-index:1;transition:border-color 0.2s;"
+          onmouseover="this.style.borderColor='#a88a2a'" onmouseout="this.style.borderColor='#2e2416'">
+    <svg width="16" height="16" fill="none" stroke="#7a6545" stroke-width="2" viewBox="0 0 24 24" aria-hidden="true"><path d="M18 6L6 18M6 6l12 12"/></svg>
+  </button>
+
+  <!-- Prev button -->
+  <button id="lb-prev" onclick="bbLightboxNav(-1)" aria-label="Previous image"
+          style="position:absolute;left:1rem;top:50%;transform:translateY(-50%);width:40px;height:40px;display:flex;align-items:center;justify-content:center;background:#1f1a0f;border:1px solid #2e2416;cursor:pointer;transition:border-color 0.2s;"
+          onmouseover="this.style.borderColor='#a88a2a'" onmouseout="this.style.borderColor='#2e2416'">
+    <svg width="16" height="16" fill="none" stroke="#c8a96e" stroke-width="2.5" viewBox="0 0 24 24" aria-hidden="true"><path d="M15 18l-6-6 6-6"/></svg>
+  </button>
+
+  <!-- Next button -->
+  <button id="lb-next" onclick="bbLightboxNav(1)" aria-label="Next image"
+          style="position:absolute;right:1rem;top:50%;transform:translateY(-50%);width:40px;height:40px;display:flex;align-items:center;justify-content:center;background:#1f1a0f;border:1px solid #2e2416;cursor:pointer;transition:border-color 0.2s;"
+          onmouseover="this.style.borderColor='#a88a2a'" onmouseout="this.style.borderColor='#2e2416'">
+    <svg width="16" height="16" fill="none" stroke="#c8a96e" stroke-width="2.5" viewBox="0 0 24 24" aria-hidden="true"><path d="M9 18l6-6-6-6"/></svg>
+  </button>
+
+  <!-- Image container -->
+  <div style="max-width:900px;width:100%;position:relative;" onclick="event.stopPropagation()">
+    <!-- Corner accents -->
+    <div style="position:absolute;top:-1px;left:-1px;width:18px;height:18px;border-top:2px solid #a88a2a;border-left:2px solid #a88a2a;z-index:2;pointer-events:none;"></div>
+    <div style="position:absolute;top:-1px;right:-1px;width:18px;height:18px;border-top:2px solid #a88a2a;border-right:2px solid #a88a2a;z-index:2;pointer-events:none;"></div>
+    <div style="position:absolute;bottom:-1px;left:-1px;width:18px;height:18px;border-bottom:2px solid #a88a2a;border-left:2px solid #a88a2a;z-index:2;pointer-events:none;"></div>
+    <div style="position:absolute;bottom:-1px;right:-1px;width:18px;height:18px;border-bottom:2px solid #a88a2a;border-right:2px solid #a88a2a;z-index:2;pointer-events:none;"></div>
+
+    <img id="lb-img" src="" alt="" style="width:100%;max-height:80vh;object-fit:contain;display:block;background:#0d0b08;" />
+
+    <!-- Caption bar -->
+    <div style="background:#111009;border-top:1px solid #2e2416;padding:0.75rem 1rem;display:flex;align-items:center;justify-content:space-between;">
+      <div>
+        <div id="lb-episode" class="font-mono" style="font-size:0.65rem;color:#8a7355;letter-spacing:0.2em;text-transform:uppercase;"></div>
+        <div id="lb-title" class="font-display" style="font-size:1.25rem;color:#e8c547;letter-spacing:0.1em;"></div>
+      </div>
+      <div id="lb-counter" class="font-mono" style="font-size:0.65rem;color:#5c3d1e;letter-spacing:0.1em;"></div>
+    </div>
+  </div>
+
+  <!-- Hazard stripe bottom -->
+  <div style="position:absolute;bottom:0;left:0;right:0;height:4px;background:repeating-linear-gradient(-45deg,#e8c547 0px,#e8c547 8px,#0d0b08 8px,#0d0b08 16px);opacity:0.7;pointer-events:none;"></div>
+</div>
+
 <!-- External JavaScript -->
 <script src="js/main.js"></script>
 </body>
 </html>
+
+
+
+
+
+
+
+
+
+
+
