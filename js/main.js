@@ -566,3 +566,233 @@ document.querySelectorAll('[data-lb-src]').forEach(card => {
     }, 250);
   };
 })();
+
+/* ── Read progress bar ── */
+(function initReadProgress() {
+  const bar = document.getElementById('read-progress');
+  if (!bar) return;
+
+  let ticking = false;
+
+  function update() {
+    const scrollTop = window.scrollY;
+    const docHeight = document.documentElement.scrollHeight - window.innerHeight;
+    const pct = docHeight > 0 ? Math.min(100, (scrollTop / docHeight) * 100) : 0;
+    bar.style.width = pct + '%';
+    ticking = false;
+  }
+
+  window.addEventListener('scroll', () => {
+    if (!ticking) {
+      requestAnimationFrame(update);
+      ticking = true;
+    }
+  }, { passive: true });
+
+  update();
+})();
+
+/* ── Custom cursor ── */
+(function initCustomCursor() {
+  if (!window.matchMedia('(pointer: fine)').matches) return;
+
+  const cursor = document.getElementById('bb-cursor');
+  if (!cursor) return;
+
+  let x = 0, y = 0;
+
+  document.addEventListener('mousemove', (e) => {
+    x = e.clientX;
+    y = e.clientY;
+    cursor.style.transform = `translate(${x}px, ${y}px)`;
+  }, { passive: true });
+
+  // Hover на кликабельных элементах
+  const HOVER_SEL = 'a, button, [role="button"], [tabindex], label, input, select, textarea, .char-card, .scene-card, .trivia-card, .tl-ep, [data-lb-src]';
+
+  document.addEventListener('mouseover', (e) => {
+    if (e.target.closest(HOVER_SEL)) cursor.classList.add('is-hovering');
+  }, { passive: true });
+
+  document.addEventListener('mouseout', (e) => {
+    if (e.target.closest(HOVER_SEL)) cursor.classList.remove('is-hovering');
+  }, { passive: true });
+
+  document.addEventListener('mousedown', () => cursor.classList.add('is-clicking'),    { passive: true });
+  document.addEventListener('mouseup',   () => cursor.classList.remove('is-clicking'), { passive: true });
+
+  document.addEventListener('mouseleave', () => { cursor.style.opacity = '0'; }, { passive: true });
+  document.addEventListener('mouseenter', () => { cursor.style.opacity = '1'; }, { passive: true });
+})();
+
+/* ── Location map (Leaflet) ── */
+(function initLocMap() {
+  const LOC_DATA = [
+    {
+      lat: 35.0853, lng: -106.6056,
+      img: 'static/images/abq.jpg', imgAlt: 'Aerial view of Albuquerque',
+      coords: '35.0853\u00b0 N \u00b7 106.6056\u00b0 W', color: '#e8c547',
+      title: { en: 'ALBUQUERQUE', ru: '\u0410\u041b\u042c\u0411\u0423\u041a\u0415\u0420\u041a\u0415' },
+      desc: {
+        en: 'New Mexico. Population 560,000. The city that became the backdrop for the greatest transformation in television history. Sun-bleached streets, desert heat, and secrets buried in the sand.',
+        ru: '\u041d\u044c\u044e-\u041c\u0435\u043a\u0441\u0438\u043a\u043e. \u041d\u0430\u0441\u0435\u043b\u0435\u043d\u0438\u0435 560 000. \u0413\u043e\u0440\u043e\u0434, \u0441\u0442\u0430\u0432\u0448\u0438\u0439 \u0444\u043e\u043d\u043e\u043c \u0434\u043b\u044f \u0432\u0435\u043b\u0438\u0447\u0430\u0439\u0448\u0435\u0433\u043e \u043f\u0440\u0435\u0432\u0440\u0430\u0449\u0435\u043d\u0438\u044f \u0432 \u0438\u0441\u0442\u043e\u0440\u0438\u0438 \u0442\u0435\u043b\u0435\u0432\u0438\u0434\u0435\u043d\u0438\u044f.',
+      },
+      tags: [
+        { en: 'Primary Setting', ru: '\u041e\u0441\u043d\u043e\u0432\u043d\u0430\u044f \u043b\u043e\u043a\u0430\u0446\u0438\u044f', color: '#e8c547', border: '#a88a2a' },
+        { en: 'All 5 Seasons', ru: '\u0412\u0441\u0435 5 \u0441\u0435\u0437\u043e\u043d\u043e\u0432' },
+      ],
+    },
+    {
+      lat: 34.68, lng: -106.90,
+      img: 'static/images/rv_lab.jpg', imgAlt: 'RV in the New Mexico desert',
+      coords: '34.68\u00b0 N \u00b7 106.90\u00b0 W', color: '#c8a96e',
+      title: { en: 'THE DESERT', ru: '\u041f\u0423\u0421\u0422\u042b\u041d\u042f' },
+      desc: {
+        en: 'The Chihuahuan Desert. Where it all began. An RV, two men, and 99.1% pure blue sky. The birthplace of Heisenberg.',
+        ru: '\u041f\u0443\u0441\u0442\u044b\u043d\u044f \u0427\u0438\u0443\u0430\u0443\u0430. \u0417\u0434\u0435\u0441\u044c \u0432\u0441\u0451 \u043d\u0430\u0447\u0430\u043b\u043e\u0441\u044c. \u0424\u0443\u0440\u0433\u043e\u043d, \u0434\u0432\u0430 \u0447\u0435\u043b\u043e\u0432\u0435\u043a\u0430 \u0438 99.1% \u0447\u0438\u0441\u0442\u043e\u0433\u043e \u0433\u043e\u043b\u0443\u0431\u043e\u0433\u043e \u043d\u0435\u0431\u0430.',
+      },
+      tags: [
+        { en: 'RV Lab', ru: '\u041b\u0430\u0431\u043e\u0440\u0430\u0442\u043e\u0440\u0438\u044f \u0432 \u0444\u0443\u0440\u0433\u043e\u043d\u0435', color: '#c8a96e', border: '#5c3d1e' },
+        { en: 'Season 1', ru: '\u0421\u0435\u0437\u043e\u043d 1' },
+      ],
+    },
+    {
+      lat: 35.0619, lng: -106.5408,
+      img: 'static/images/los_pollos.jpg', imgAlt: 'Los Pollos Hermanos restaurant',
+      coords: '35.0619\u00b0 N \u00b7 106.5408\u00b0 W', color: '#c97d20',
+      title: { en: 'LOS POLLOS HERMANOS', ru: 'LOS POLLOS HERMANOS' },
+      desc: {
+        en: "A fast food chain. A legitimate front. The nerve centre of Gus Fring's distribution empire. The chicken is excellent.",
+        ru: '\u0421\u0435\u0442\u044c \u0444\u0430\u0441\u0442\u0444\u0443\u0434\u0430. \u041b\u0435\u0433\u0430\u043b\u044c\u043d\u043e\u0435 \u043f\u0440\u0438\u043a\u0440\u044b\u0442\u0438\u0435. \u041d\u0435\u0440\u0432\u043d\u044b\u0439 \u0446\u0435\u043d\u0442\u0440 \u0438\u043c\u043f\u0435\u0440\u0438\u0438 \u0413\u0443\u0441\u0430 \u0424\u0440\u0438\u043d\u0433\u0430. \u041a\u0443\u0440\u0438\u0446\u0430 \u043e\u0442\u043c\u0435\u043d\u043d\u0430\u044f.',
+      },
+      tags: [
+        { en: 'Gus Fring', ru: '\u0413\u0443\u0441 \u0424\u0440\u0438\u043d\u0433', color: '#c97d20', border: '#5c3d1e' },
+        { en: 'Seasons 3\u20134', ru: '\u0421\u0435\u0437\u043e\u043d\u044b 3\u20134' },
+      ],
+    },
+    {
+      lat: 35.0580, lng: -106.5380,
+      img: 'static/images/the_superlab.jpg', imgAlt: 'Underground superlab',
+      coords: 'CLASSIFIED \u00b7 UNDERGROUND', color: '#d4bc8a',
+      title: { en: 'THE SUPERLAB', ru: '\u0421\u0423\u041f\u0415\u0420\u041b\u0410\u0411\u041e\u0420\u0410\u0422\u041e\u0420\u0418\u042f' },
+      desc: {
+        en: "Beneath Los Pollos Hermanos. $8M to build. 200 lbs of product per week. Walt's kingdom \u2014 and his prison.",
+        ru: '\u041f\u043e\u0434 Los Pollos Hermanos. $8 \u043c\u043b\u043d \u043d\u0430 \u0441\u0442\u0440\u043e\u0438\u0442\u0435\u043b\u044c\u0441\u0442\u0432\u043e. 200 \u0444\u0443\u043d\u0442\u043e\u0432 \u0432 \u043d\u0435\u0434\u0435\u043b\u044e. \u041a\u043e\u0440\u043e\u043b\u0435\u0432\u0441\u0442\u0432\u043e \u0423\u043e\u043b\u0442\u0435\u0440\u0430 \u2014 \u0438 \u0435\u0433\u043e \u0442\u044e\u0440\u044c\u043c\u0430.',
+      },
+      tags: [
+        { en: 'Underground', ru: '\u041f\u043e\u0434\u0437\u0435\u043c\u043d\u0430\u044f', color: '#d4bc8a', border: '#5c3d1e' },
+        { en: 'Seasons 3\u20134', ru: '\u0421\u0435\u0437\u043e\u043d\u044b 3\u20134' },
+      ],
+    },
+    {
+      lat: 35.1267, lng: -106.5364,
+      img: 'static/images/walter_white.webp', imgAlt: 'Walter White \u2014 308 Negra Arroyo Lane',
+      coords: '308 Negra Arroyo Lane, ABQ', color: '#8a7355',
+      title: { en: 'WHITE RESIDENCE', ru: '\u0414\u041e\u041c \u0423\u0410\u0419\u0422\u041e\u0412' },
+      desc: {
+        en: 'A modest home in a quiet suburb. Where a family fell apart. Where lies were born. Where Walt buried his secrets \u2014 and himself.',
+        ru: '\u0421\u043a\u0440\u043e\u043c\u043d\u044b\u0439 \u0434\u043e\u043c \u0432 \u0442\u0438\u0445\u043e\u043c \u043f\u0440\u0438\u0433\u043e\u0440\u043e\u0434\u0435. \u0413\u0434\u0435 \u0440\u0430\u0441\u043f\u0430\u043b\u0430\u0441\u044c \u0441\u0435\u043c\u044c\u044f. \u0413\u0434\u0435 \u0440\u043e\u0436\u0434\u0430\u043b\u0430\u0441\u044c \u043b\u043e\u0436\u044c. \u0413\u0434\u0435 \u0423\u043e\u043b\u0442\u0435\u0440 \u0445\u043e\u0440\u043e\u043d\u0438\u043b \u0441\u0432\u043e\u0438 \u0442\u0430\u0439\u043d\u044b \u2014 \u0438 \u0441\u0435\u0431\u044f.',
+      },
+      tags: [
+        { en: 'Family Home', ru: '\u0421\u0435\u043c\u0435\u0439\u043d\u044b\u0439 \u0434\u043e\u043c' },
+        { en: 'All 5 Seasons', ru: '\u0412\u0441\u0435 5 \u0441\u0435\u0437\u043e\u043d\u043e\u0432' },
+      ],
+    },
+  ];
+
+  const mapEl    = document.getElementById('loc-leaflet');
+  const defPanel = document.getElementById('loc-default');
+  const detPanel = document.getElementById('loc-detail');
+  const detImg   = document.getElementById('loc-detail-img');
+  const detCoords= document.getElementById('loc-detail-coords');
+  const detTitle = document.getElementById('loc-detail-title');
+  const detDesc  = document.getElementById('loc-detail-desc');
+  const detTags  = document.getElementById('loc-detail-tags');
+
+  if (!mapEl || typeof L === 'undefined') return;
+
+  const map = L.map('loc-leaflet', {
+    center: [35.05, -106.65],
+    zoom: 10,
+    zoomControl: true,
+    scrollWheelZoom: false,
+    attributionControl: true,
+  });
+
+  L.tileLayer('https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png', {
+    attribution: '\u00a9 <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> \u00a9 <a href="https://carto.com/">CARTO</a>',
+    subdomains: 'abcd',
+    maxZoom: 19,
+  }).addTo(map);
+
+  // Принудительный пересчёт размера — карта могла отрендериться в скрытом контейнере
+  setTimeout(() => map.invalidateSize(), 300);
+
+  // Пересчёт при появлении секции в viewport
+  const locSection = document.getElementById('locations');
+  if (locSection) {
+    const sizeObserver = new IntersectionObserver((entries) => {
+      if (entries[0].isIntersecting) {
+        map.invalidateSize();
+        sizeObserver.disconnect();
+      }
+    }, { threshold: 0.1 });
+    sizeObserver.observe(locSection);
+  }
+
+  function makeIcon(color) {
+    const svg = `<svg xmlns="http://www.w3.org/2000/svg" width="28" height="36" viewBox="0 0 28 36">
+      <path d="M14 0C6.27 0 0 6.27 0 14c0 9.625 14 22 14 22S28 23.625 28 14C28 6.27 21.73 0 14 0z"
+            fill="${color}" stroke="#0d0b08" stroke-width="1.5"/>
+      <circle cx="14" cy="14" r="5" fill="#0d0b08" opacity="0.7"/>
+    </svg>`;
+    return L.divIcon({ html: svg, className: '', iconSize: [28, 36], iconAnchor: [14, 36] });
+  }
+
+  LOC_DATA.forEach((loc, idx) => {
+    L.marker([loc.lat, loc.lng], { icon: makeIcon(loc.color) })
+      .addTo(map)
+      .on('click', () => locSelect(idx));
+  });
+
+  const mapStyle = document.createElement('style');
+  mapStyle.textContent = `
+    #loc-leaflet .leaflet-control-zoom a {
+      background: #1f1a0f !important; color: #e8c547 !important;
+      border-color: #2e2416 !important; font-family: 'Share Tech Mono', monospace !important;
+    }
+    #loc-leaflet .leaflet-control-zoom a:hover { background: #2e2416 !important; }
+    #loc-leaflet .leaflet-control-attribution {
+      background: rgba(13,11,8,0.85) !important; color: #4a3820 !important; font-size: 9px !important;
+    }
+    #loc-leaflet .leaflet-control-attribution a { color: #7a6545 !important; }
+  `;
+  document.head.appendChild(mapStyle);
+
+  window.locSelect = function(idx) {
+    const loc  = LOC_DATA[idx];
+    const lang = document.body.classList.contains('lang-ru') ? 'ru' : 'en';
+    map.flyTo([loc.lat, loc.lng], 13, { duration: 1.2 });
+    detImg.src            = loc.img;
+    detImg.alt            = loc.imgAlt;
+    detCoords.textContent = loc.coords;
+    detTitle.textContent  = loc.title[lang];
+    detTitle.style.color  = loc.color;
+    detDesc.textContent   = loc.desc[lang];
+    detTags.innerHTML = loc.tags.map(t =>
+      `<span style="font-family:'Share Tech Mono',monospace;font-size:0.6rem;letter-spacing:0.12em;text-transform:uppercase;padding:2px 8px;border:1px solid ${t.border || '#2e2416'};color:${t.color || '#7a6545'};background:rgba(13,11,8,0.6);">${t[lang]}</span>`
+    ).join('');
+    defPanel.style.display = 'none';
+    detPanel.style.display = 'flex';
+  };
+
+  const _orig = window.setLang;
+  window.setLang = function(lang) {
+    _orig(lang);
+    if (detPanel.style.display !== 'none') {
+      const title = detTitle.textContent;
+      const idx = LOC_DATA.findIndex(l => l.title.en === title || l.title.ru === title);
+      if (idx >= 0) locSelect(idx);
+    }
+  };
+})();

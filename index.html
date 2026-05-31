@@ -51,6 +51,43 @@
   <link rel="icon" href="static/images/icon.png" type="image/png" />
   <link rel="apple-touch-icon" href="static/images/icon.png" />
   <style>
+    /* ── Custom cursor ── */
+    @media (pointer: fine) {
+      *, *::before, *::after { cursor: none !important; }
+
+      #bb-cursor {
+        position: fixed;
+        top: 0; left: 0;
+        pointer-events: none;
+        z-index: 99999;
+        will-change: transform;
+        /* Горячая точка стрелки — верхний левый угол */
+        transform: translate(0px, 0px);
+      }
+
+      #bb-cursor svg {
+        display: block;
+        filter: drop-shadow(0 0 3px rgba(168, 138, 42, 0.6));
+        transition: transform 0.12s ease;
+      }
+
+      /* Hover — стрелка чуть ярче */
+      #bb-cursor.is-hovering svg {
+        filter: drop-shadow(0 0 6px rgba(232, 197, 71, 0.9));
+        transform: scale(1.1);
+      }
+
+      /* Клик — стрелка сжимается */
+      #bb-cursor.is-clicking svg {
+        transform: scale(0.88);
+        filter: drop-shadow(0 0 2px rgba(232, 197, 71, 0.4));
+      }
+    }
+
+    @media (pointer: coarse) {
+      #bb-cursor { display: none; }
+    }
+
     /* ── Language switcher ── */
     .lang-btn {
       font-family: var(--font-mono, 'Share Tech Mono', monospace);
@@ -181,6 +218,21 @@
 </head>
 <body class="font-body lang-en" style="background-color:#111009;color:#d4bc8a;">
 
+<!-- Custom cursor — desktop only -->
+<div id="bb-cursor" aria-hidden="true">
+  <!-- Стрелка в стиле Breaking Bad: острая, с тонкой обводкой, hazard yellow -->
+  <svg width="22" height="26" viewBox="0 0 22 26" fill="none" xmlns="http://www.w3.org/2000/svg">
+    <!-- Тёмная подложка для контраста на светлых элементах -->
+    <path d="M2 2L2 21L8.5 15.5L12.5 24L15 23L11 14.5L19.5 14.5L2 2Z"
+          fill="#0d0b08" stroke="#0d0b08" stroke-width="2.5"
+          stroke-linejoin="round" stroke-linecap="round"/>
+    <!-- Основная стрелка -->
+    <path d="M2 2L2 21L8.5 15.5L12.5 24L15 23L11 14.5L19.5 14.5L2 2Z"
+          fill="#e8c547" stroke="#a88a2a" stroke-width="0.8"
+          stroke-linejoin="round" stroke-linecap="round"/>
+  </svg>
+</div>
+
 <!-- Grain overlay -->
 <div aria-hidden="true" style="position:fixed;inset:0;pointer-events:none;z-index:9000;background-image:url('data:image/svg+xml,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 width=%22300%22 height=%22300%22%3E%3Cfilter id=%22g%22%3E%3CfeTurbulence type=%22fractalNoise%22 baseFrequency=%220.75%22 numOctaves=%224%22 stitchTiles=%22stitch%22/%3E%3CfeColorMatrix type=%22saturate%22 values=%220%22/%3E%3C/filter%3E%3Crect width=%22300%22 height=%22300%22 filter=%22url(%23g)%22 opacity=%220.16%22/%3E%3C/svg%3E');background-size:200px 200px;mix-blend-mode:overlay;opacity:0.9;"></div>
 <!-- Vignette -->
@@ -190,6 +242,7 @@
      NAVBAR
 ═══════════════════════════════════════════════════════════════ -->
 <nav id="navbar" class="fixed top-0 left-0 right-0 z-50 px-4 md:px-8 py-4">
+  <div id="read-progress" aria-hidden="true" style="position:absolute;bottom:0;left:0;height:2px;width:0%;background:linear-gradient(90deg,#a88a2a,#e8c547);pointer-events:none;will-change:width;"></div>
   <div class="max-w-7xl mx-auto flex items-center justify-between">
 
     <!-- Logo -->
@@ -223,6 +276,9 @@
       </a>
       <a href="#trivia" class="font-mono text-xs tracking-widest uppercase cursor-pointer transition-colors duration-200" style="color:#7a6545;" onmouseover="this.style.color='#c8a96e'" onmouseout="this.style.color='#7a6545'">
         <span data-lang="en">Trivia</span><span data-lang="ru">Факты</span>
+      </a>
+      <a href="#locations" class="font-mono text-xs tracking-widest uppercase cursor-pointer transition-colors duration-200" style="color:#7a6545;" onmouseover="this.style.color='#c8a96e'" onmouseout="this.style.color='#7a6545'">
+        <span data-lang="en">Locations</span><span data-lang="ru">Локации</span>
       </a>
     </div>
 
@@ -1533,6 +1589,91 @@
 
 <div class="chem-divider"></div>
 
+<!-- ═══════════════════════════════════════════════════════════════
+     LOCATIONS
+═══════════════════════════════════════════════════════════════ -->
+
+<!-- Leaflet CSS -->
+<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+
+<section id="locations" class="relative py-24 overflow-hidden" style="background:#1a1208;">
+  <div class="absolute inset-0 pointer-events-none">
+    <div class="absolute top-0 right-1/4 w-96 h-96 rounded-full opacity-4"
+         style="background:radial-gradient(circle,#c8a96e,transparent);filter:blur(100px);"></div>
+    <div class="absolute bottom-0 left-1/4 w-96 h-96 rounded-full opacity-3"
+         style="background:radial-gradient(circle,#8b3a1a,transparent);filter:blur(100px);"></div>
+  </div>
+
+  <div class="max-w-7xl mx-auto px-4 md:px-8 relative z-10">
+
+    <!-- Header -->
+    <div class="text-center mb-16 reveal">
+      <div class="flex items-center justify-center gap-4 mb-4">
+        <div style="height:1px;width:64px;background:linear-gradient(90deg,transparent,#a88a2a);opacity:0.7;"></div>
+        <span class="font-mono text-xs uppercase" style="color:#8a7355;letter-spacing:0.3em;">
+          <span data-lang="en">Field Report</span><span data-lang="ru">Полевой отчёт</span>
+        </span>
+        <div style="height:1px;width:64px;background:linear-gradient(270deg,transparent,#a88a2a);opacity:0.7;"></div>
+      </div>
+      <h2 class="font-display text-6xl md:text-7xl tracking-wider mb-4" style="color:#d4bc8a;">
+        <span data-lang="en">LOCATIONS</span><span data-lang="ru">ЛОКАЦИИ</span>
+      </h2>
+      <p class="font-mono text-sm tracking-wider max-w-xl mx-auto" style="color:#7a6545;">
+        <span data-lang="en">Click a marker to reveal the location. All roads lead to Albuquerque.</span>
+        <span data-lang="ru">Нажмите на метку, чтобы открыть локацию. Все дороги ведут в Альбукерке.</span>
+      </p>
+    </div>
+
+    <!-- Map + Detail panel -->
+    <div class="reveal grid lg:grid-cols-5 gap-0" style="border:1px solid #2e2416;background:#111009;">
+
+      <!-- Leaflet map -->
+      <div class="lg:col-span-3 relative" style="min-height:480px;border-right:1px solid #2e2416;">
+        <div id="loc-leaflet" style="width:100%;height:480px;"></div>
+        <!-- Hazard overlay frame — поверх карты, pointer-events:none -->
+        <div class="absolute inset-0 pointer-events-none" style="
+          box-shadow: inset 0 0 40px rgba(13,11,8,0.6);
+          border: 1px solid #2e2416;
+        "></div>
+      </div>
+
+      <!-- Detail panel -->
+      <div class="lg:col-span-2 flex flex-col" style="min-height:480px;">
+
+        <!-- Default state -->
+        <div id="loc-default" class="flex-1 flex flex-col items-center justify-center p-8 text-center">
+          <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="#2e2416" stroke-width="1" aria-hidden="true">
+            <circle cx="12" cy="10" r="4"/><path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7z"/>
+          </svg>
+          <p class="font-mono text-xs mt-4" style="color:#2e2416;letter-spacing:0.15em;">
+            <span data-lang="en">NO LOCATION SELECTED</span><span data-lang="ru">ЛОКАЦИЯ НЕ ВЫБРАНА</span>
+          </p>
+        </div>
+
+        <!-- Location detail -->
+        <div id="loc-detail" class="flex-1 flex flex-col" style="display:none;">
+          <div style="height:200px;overflow:hidden;flex-shrink:0;position:relative;">
+            <img id="loc-detail-img" src="" alt=""
+                 style="width:100%;height:100%;object-fit:cover;filter:saturate(0.35) contrast(1.2) sepia(0.3) brightness(0.7);" />
+            <div style="position:absolute;inset:0;background:linear-gradient(0deg,rgba(13,11,8,0.8) 0%,transparent 60%);"></div>
+            <div style="position:absolute;top:0;left:0;right:0;height:3px;background:repeating-linear-gradient(-45deg,#e8c547 0px,#e8c547 6px,#0d0b08 6px,#0d0b08 12px);opacity:0.6;"></div>
+          </div>
+          <div class="flex-1 p-6 flex flex-col justify-between">
+            <div>
+              <div id="loc-detail-coords" class="font-mono mb-2" style="font-size:0.6rem;color:#7a6545;letter-spacing:0.2em;"></div>
+              <h3 id="loc-detail-title" class="font-display text-2xl tracking-wider mb-3" style="color:#e8c547;"></h3>
+              <p id="loc-detail-desc" class="text-sm leading-relaxed" style="color:#8a7355;"></p>
+            </div>
+            <div id="loc-detail-tags" class="flex flex-wrap gap-2 mt-4"></div>
+          </div>
+        </div>
+
+      </div>
+    </div>
+  </div>
+</section>
+
+<div class="chem-divider"></div>
 
 <!-- ═══════════════════════════════════════════════════════════════
      QUOTE BANNER
@@ -1716,6 +1857,9 @@
   <!-- Hazard stripe bottom -->
   <div style="position:absolute;bottom:0;left:0;right:0;height:4px;background:repeating-linear-gradient(-45deg,#e8c547 0px,#e8c547 8px,#0d0b08 8px,#0d0b08 16px);opacity:0.7;pointer-events:none;"></div>
 </div>
+
+<!-- Leaflet JS -->
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
 
 <!-- External JavaScript -->
 <script src="js/main.js"></script>
