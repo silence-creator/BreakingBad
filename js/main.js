@@ -634,13 +634,10 @@ document.querySelectorAll('[data-lb-src]').forEach(card => {
       coords: '35.0853\u00b0 N \u00b7 106.6056\u00b0 W', color: '#e8c547',
       title: { en: 'ALBUQUERQUE', ru: '\u0410\u041b\u042c\u0411\u0423\u041a\u0415\u0420\u041a\u0415' },
       desc: {
-        en: 'New Mexico. Population 560,000. The city that became the backdrop for the greatest transformation in television history. Sun-bleached streets, desert heat, and secrets buried in the sand.',
-        ru: '\u041d\u044c\u044e-\u041c\u0435\u043a\u0441\u0438\u043a\u043e. \u041d\u0430\u0441\u0435\u043b\u0435\u043d\u0438\u0435 560 000. \u0413\u043e\u0440\u043e\u0434, \u0441\u0442\u0430\u0432\u0448\u0438\u0439 \u0444\u043e\u043d\u043e\u043c \u0434\u043b\u044f \u0432\u0435\u043b\u0438\u0447\u0430\u0439\u0448\u0435\u0433\u043e \u043f\u0440\u0435\u0432\u0440\u0430\u0449\u0435\u043d\u0438\u044f \u0432 \u0438\u0441\u0442\u043e\u0440\u0438\u0438 \u0442\u0435\u043b\u0435\u0432\u0438\u0434\u0435\u043d\u0438\u044f.',
+        en: 'New Mexico. Population 560,000. The city that became the backdrop for the greatest transformation in television history.',
+        ru: '\u041d\u044c\u044e-\u041c\u0435\u043a\u0441\u0438\u043a\u043e. \u041d\u0430\u0441\u0435\u043b\u0435\u043d\u0438\u0435 560 000. \u0413\u043e\u0440\u043e\u0434, \u0441\u0442\u0430\u0432\u0448\u0438\u0439 \u0444\u043e\u043d\u043e\u043c \u0434\u043b\u044f \u0432\u0435\u043b\u0438\u0447\u0430\u0439\u0448\u0435\u0433\u043e \u043f\u0440\u0435\u0432\u0440\u0430\u0449\u0435\u043d\u0438\u044f \u0432 \u0438\u0441\u0442\u043e\u0440\u0438\u0438 \u0422\u0412.',
       },
-      tags: [
-        { en: 'Primary Setting', ru: '\u041e\u0441\u043d\u043e\u0432\u043d\u0430\u044f \u043b\u043e\u043a\u0430\u0446\u0438\u044f', color: '#e8c547', border: '#a88a2a' },
-        { en: 'All 5 Seasons', ru: '\u0412\u0441\u0435 5 \u0441\u0435\u0437\u043e\u043d\u043e\u0432' },
-      ],
+      tags: [{ en: 'Primary Setting', ru: '\u041e\u0441\u043d\u043e\u0432\u043d\u0430\u044f \u043b\u043e\u043a\u0430\u0446\u0438\u044f', color: '#e8c547', border: '#a88a2a' }, { en: 'All 5 Seasons', ru: '\u0412\u0441\u0435 5 \u0441\u0435\u0437\u043e\u043d\u043e\u0432' }],
     },
     {
       lat: 34.68, lng: -106.90,
@@ -648,27 +645,21 @@ document.querySelectorAll('[data-lb-src]').forEach(card => {
       coords: '34.68\u00b0 N \u00b7 106.90\u00b0 W', color: '#c8a96e',
       title: { en: 'THE DESERT', ru: '\u041f\u0423\u0421\u0422\u042b\u041d\u042f' },
       desc: {
-        en: 'The Chihuahuan Desert. Where it all began. An RV, two men, and 99.1% pure blue sky. The birthplace of Heisenberg.',
-        ru: '\u041f\u0443\u0441\u0442\u044b\u043d\u044f \u0427\u0438\u0443\u0430\u0443\u0430. \u0417\u0434\u0435\u0441\u044c \u0432\u0441\u0451 \u043d\u0430\u0447\u0430\u043b\u043e\u0441\u044c. \u0424\u0443\u0440\u0433\u043e\u043d, \u0434\u0432\u0430 \u0447\u0435\u043b\u043e\u0432\u0435\u043a\u0430 \u0438 99.1% \u0447\u0438\u0441\u0442\u043e\u0433\u043e \u0433\u043e\u043b\u0443\u0431\u043e\u0433\u043e \u043d\u0435\u0431\u0430.',
+        en: 'The Chihuahuan Desert. Where it all began. An RV, two men, and 99.1% pure blue sky.',
+        ru: '\u041f\u0443\u0441\u0442\u044b\u043d\u044f \u0427\u0438\u0443\u0430\u0443\u0430. \u0417\u0434\u0435\u0441\u044c \u0432\u0441\u0451 \u043d\u0430\u0447\u0430\u043b\u043e\u0441\u044c. \u0424\u0443\u0440\u0433\u043e\u043d, \u0434\u0432\u0430 \u0447\u0435\u043b\u043e\u0432\u0435\u043a\u0430 \u0438 99.1% \u0447\u0438\u0441\u0442\u043e\u0442\u044b.',
       },
-      tags: [
-        { en: 'RV Lab', ru: '\u041b\u0430\u0431\u043e\u0440\u0430\u0442\u043e\u0440\u0438\u044f \u0432 \u0444\u0443\u0440\u0433\u043e\u043d\u0435', color: '#c8a96e', border: '#5c3d1e' },
-        { en: 'Season 1', ru: '\u0421\u0435\u0437\u043e\u043d 1' },
-      ],
+      tags: [{ en: 'RV Lab', ru: '\u041b\u0430\u0431 \u0432 \u0444\u0443\u0440\u0433\u043e\u043d\u0435', color: '#c8a96e', border: '#5c3d1e' }, { en: 'Season 1', ru: '\u0421\u0435\u0437\u043e\u043d 1' }],
     },
     {
       lat: 35.0619, lng: -106.5408,
-      img: 'static/images/los_pollos.jpg', imgAlt: 'Los Pollos Hermanos restaurant',
+      img: 'static/images/los_pollos.jpg', imgAlt: 'Los Pollos Hermanos',
       coords: '35.0619\u00b0 N \u00b7 106.5408\u00b0 W', color: '#c97d20',
       title: { en: 'LOS POLLOS HERMANOS', ru: 'LOS POLLOS HERMANOS' },
       desc: {
-        en: "A fast food chain. A legitimate front. The nerve centre of Gus Fring's distribution empire. The chicken is excellent.",
-        ru: '\u0421\u0435\u0442\u044c \u0444\u0430\u0441\u0442\u0444\u0443\u0434\u0430. \u041b\u0435\u0433\u0430\u043b\u044c\u043d\u043e\u0435 \u043f\u0440\u0438\u043a\u0440\u044b\u0442\u0438\u0435. \u041d\u0435\u0440\u0432\u043d\u044b\u0439 \u0446\u0435\u043d\u0442\u0440 \u0438\u043c\u043f\u0435\u0440\u0438\u0438 \u0413\u0443\u0441\u0430 \u0424\u0440\u0438\u043d\u0433\u0430. \u041a\u0443\u0440\u0438\u0446\u0430 \u043e\u0442\u043c\u0435\u043d\u043d\u0430\u044f.',
+        en: "A fast food chain. A legitimate front. The nerve centre of Gus Fring's distribution empire.",
+        ru: '\u0421\u0435\u0442\u044c \u0444\u0430\u0441\u0442\u0444\u0443\u0434\u0430. \u041b\u0435\u0433\u0430\u043b\u044c\u043d\u043e\u0435 \u043f\u0440\u0438\u043a\u0440\u044b\u0442\u0438\u0435. \u041d\u0435\u0440\u0432\u043d\u044b\u0439 \u0446\u0435\u043d\u0442\u0440 \u0438\u043c\u043f\u0435\u0440\u0438\u0438 \u0413\u0443\u0441\u0430 \u0424\u0440\u0438\u043d\u0433\u0430.',
       },
-      tags: [
-        { en: 'Gus Fring', ru: '\u0413\u0443\u0441 \u0424\u0440\u0438\u043d\u0433', color: '#c97d20', border: '#5c3d1e' },
-        { en: 'Seasons 3\u20134', ru: '\u0421\u0435\u0437\u043e\u043d\u044b 3\u20134' },
-      ],
+      tags: [{ en: 'Gus Fring', ru: '\u0413\u0443\u0441 \u0424\u0440\u0438\u043d\u0433', color: '#c97d20', border: '#5c3d1e' }, { en: 'Seasons 3\u20134', ru: '\u0421\u0435\u0437\u043e\u043d\u044b 3\u20134' }],
     },
     {
       lat: 35.0580, lng: -106.5380,
@@ -676,27 +667,21 @@ document.querySelectorAll('[data-lb-src]').forEach(card => {
       coords: 'CLASSIFIED \u00b7 UNDERGROUND', color: '#d4bc8a',
       title: { en: 'THE SUPERLAB', ru: '\u0421\u0423\u041f\u0415\u0420\u041b\u0410\u0411\u041e\u0420\u0410\u0422\u041e\u0420\u0418\u042f' },
       desc: {
-        en: "Beneath Los Pollos Hermanos. $8M to build. 200 lbs of product per week. Walt's kingdom \u2014 and his prison.",
-        ru: '\u041f\u043e\u0434 Los Pollos Hermanos. $8 \u043c\u043b\u043d \u043d\u0430 \u0441\u0442\u0440\u043e\u0438\u0442\u0435\u043b\u044c\u0441\u0442\u0432\u043e. 200 \u0444\u0443\u043d\u0442\u043e\u0432 \u0432 \u043d\u0435\u0434\u0435\u043b\u044e. \u041a\u043e\u0440\u043e\u043b\u0435\u0432\u0441\u0442\u0432\u043e \u0423\u043e\u043b\u0442\u0435\u0440\u0430 \u2014 \u0438 \u0435\u0433\u043e \u0442\u044e\u0440\u044c\u043c\u0430.',
+        en: "Beneath Los Pollos Hermanos. $8M to build. 200 lbs per week. Walt's kingdom.",
+        ru: '\u041f\u043e\u0434 Los Pollos Hermanos. $8 \u043c\u043b\u043d. 200 \u0444\u0443\u043d\u0442\u043e\u0432 \u0432 \u043d\u0435\u0434\u0435\u043b\u044e. \u041a\u043e\u0440\u043e\u043b\u0435\u0432\u0441\u0442\u0432\u043e \u0423\u043e\u043b\u0442\u0435\u0440\u0430.',
       },
-      tags: [
-        { en: 'Underground', ru: '\u041f\u043e\u0434\u0437\u0435\u043c\u043d\u0430\u044f', color: '#d4bc8a', border: '#5c3d1e' },
-        { en: 'Seasons 3\u20134', ru: '\u0421\u0435\u0437\u043e\u043d\u044b 3\u20134' },
-      ],
+      tags: [{ en: 'Underground', ru: '\u041f\u043e\u0434\u0437\u0435\u043c\u043d\u0430\u044f', color: '#d4bc8a', border: '#5c3d1e' }, { en: 'Seasons 3\u20134', ru: '\u0421\u0435\u0437\u043e\u043d\u044b 3\u20134' }],
     },
     {
       lat: 35.1267, lng: -106.5364,
-      img: 'static/images/walter_white.webp', imgAlt: 'Walter White \u2014 308 Negra Arroyo Lane',
+      img: 'static/images/walter_white.webp', imgAlt: '308 Negra Arroyo Lane',
       coords: '308 Negra Arroyo Lane, ABQ', color: '#8a7355',
       title: { en: 'WHITE RESIDENCE', ru: '\u0414\u041e\u041c \u0423\u0410\u0419\u0422\u041e\u0412' },
       desc: {
-        en: 'A modest home in a quiet suburb. Where a family fell apart. Where lies were born. Where Walt buried his secrets \u2014 and himself.',
-        ru: '\u0421\u043a\u0440\u043e\u043c\u043d\u044b\u0439 \u0434\u043e\u043c \u0432 \u0442\u0438\u0445\u043e\u043c \u043f\u0440\u0438\u0433\u043e\u0440\u043e\u0434\u0435. \u0413\u0434\u0435 \u0440\u0430\u0441\u043f\u0430\u043b\u0430\u0441\u044c \u0441\u0435\u043c\u044c\u044f. \u0413\u0434\u0435 \u0440\u043e\u0436\u0434\u0430\u043b\u0430\u0441\u044c \u043b\u043e\u0436\u044c. \u0413\u0434\u0435 \u0423\u043e\u043b\u0442\u0435\u0440 \u0445\u043e\u0440\u043e\u043d\u0438\u043b \u0441\u0432\u043e\u0438 \u0442\u0430\u0439\u043d\u044b \u2014 \u0438 \u0441\u0435\u0431\u044f.',
+        en: 'A modest home in a quiet suburb. Where a family fell apart. Where lies were born.',
+        ru: '\u0421\u043a\u0440\u043e\u043c\u043d\u044b\u0439 \u0434\u043e\u043c \u0432 \u0442\u0438\u0445\u043e\u043c \u043f\u0440\u0438\u0433\u043e\u0440\u043e\u0434\u0435. \u0413\u0434\u0435 \u0440\u0430\u0441\u043f\u0430\u043b\u0430\u0441\u044c \u0441\u0435\u043c\u044c\u044f.',
       },
-      tags: [
-        { en: 'Family Home', ru: '\u0421\u0435\u043c\u0435\u0439\u043d\u044b\u0439 \u0434\u043e\u043c' },
-        { en: 'All 5 Seasons', ru: '\u0412\u0441\u0435 5 \u0441\u0435\u0437\u043e\u043d\u043e\u0432' },
-      ],
+      tags: [{ en: 'Family Home', ru: '\u0421\u0435\u043c\u0435\u0439\u043d\u044b\u0439 \u0434\u043e\u043c' }, { en: 'All 5 Seasons', ru: '\u0412\u0441\u0435 5 \u0441\u0435\u0437\u043e\u043d\u043e\u0432' }],
     },
   ];
 
@@ -720,24 +705,19 @@ document.querySelectorAll('[data-lb-src]').forEach(card => {
   });
 
   L.tileLayer('https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png', {
-    attribution: '\u00a9 <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> \u00a9 <a href="https://carto.com/">CARTO</a>',
+    attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OSM</a> &copy; <a href="https://carto.com/">CARTO</a>',
     subdomains: 'abcd',
     maxZoom: 19,
   }).addTo(map);
 
-  // Принудительный пересчёт размера — карта могла отрендериться в скрытом контейнере
-  setTimeout(() => map.invalidateSize(), 300);
-
-  // Пересчёт при появлении секции в viewport
+  // Fix map size when section becomes visible
+  setTimeout(() => map.invalidateSize(), 400);
   const locSection = document.getElementById('locations');
   if (locSection) {
-    const sizeObserver = new IntersectionObserver((entries) => {
-      if (entries[0].isIntersecting) {
-        map.invalidateSize();
-        sizeObserver.disconnect();
-      }
+    const obs = new IntersectionObserver((entries) => {
+      if (entries[0].isIntersecting) { map.invalidateSize(); obs.disconnect(); }
     }, { threshold: 0.1 });
-    sizeObserver.observe(locSection);
+    obs.observe(locSection);
   }
 
   function makeIcon(color) {
@@ -755,19 +735,15 @@ document.querySelectorAll('[data-lb-src]').forEach(card => {
       .on('click', () => locSelect(idx));
   });
 
-  const mapStyle = document.createElement('style');
-  mapStyle.textContent = `
-    #loc-leaflet .leaflet-control-zoom a {
-      background: #1f1a0f !important; color: #e8c547 !important;
-      border-color: #2e2416 !important; font-family: 'Share Tech Mono', monospace !important;
-    }
-    #loc-leaflet .leaflet-control-zoom a:hover { background: #2e2416 !important; }
-    #loc-leaflet .leaflet-control-attribution {
-      background: rgba(13,11,8,0.85) !important; color: #4a3820 !important; font-size: 9px !important;
-    }
-    #loc-leaflet .leaflet-control-attribution a { color: #7a6545 !important; }
+  // Style Leaflet controls
+  const s = document.createElement('style');
+  s.textContent = `
+    #loc-leaflet .leaflet-control-zoom a { background:#1f1a0f!important;color:#e8c547!important;border-color:#2e2416!important; }
+    #loc-leaflet .leaflet-control-zoom a:hover { background:#2e2416!important; }
+    #loc-leaflet .leaflet-control-attribution { background:rgba(13,11,8,0.85)!important;color:#4a3820!important;font-size:9px!important; }
+    #loc-leaflet .leaflet-control-attribution a { color:#7a6545!important; }
   `;
-  document.head.appendChild(mapStyle);
+  document.head.appendChild(s);
 
   window.locSelect = function(idx) {
     const loc  = LOC_DATA[idx];
@@ -780,7 +756,7 @@ document.querySelectorAll('[data-lb-src]').forEach(card => {
     detTitle.style.color  = loc.color;
     detDesc.textContent   = loc.desc[lang];
     detTags.innerHTML = loc.tags.map(t =>
-      `<span style="font-family:'Share Tech Mono',monospace;font-size:0.6rem;letter-spacing:0.12em;text-transform:uppercase;padding:2px 8px;border:1px solid ${t.border || '#2e2416'};color:${t.color || '#7a6545'};background:rgba(13,11,8,0.6);">${t[lang]}</span>`
+      `<span style="font-family:'Share Tech Mono',monospace;font-size:0.6rem;letter-spacing:0.12em;text-transform:uppercase;padding:2px 8px;border:1px solid ${t.border||'#2e2416'};color:${t.color||'#7a6545'};background:rgba(13,11,8,0.6);">${t[lang]}</span>`
     ).join('');
     defPanel.style.display = 'none';
     detPanel.style.display = 'flex';
